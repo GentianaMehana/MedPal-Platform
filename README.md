@@ -60,8 +60,13 @@ MedPal është një platformë digjitale për menaxhimin e klinikave, mjekëve d
 - **Version Control:** GitHub
 
 ## 📦 Instalimi dhe Konfigurimi
-
 ### 1. Klonimi i projektit
 ```bash
 git clone https://github.com/GentianaMehana/MedPal-Platform.git
 cd MedPal-Platform
+
+
+2. Instalimi i dependencies
+bash
+cd frontend
+npm install
