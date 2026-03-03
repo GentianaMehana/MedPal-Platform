@@ -1,78 +1,72 @@
-🏥 MedPal – Platformë Digjitale për Menaxhimin e Klinikave
-MedPal është një platformë e ndërtuar me teknologji moderne që ofron menaxhim të avancuar të klinikave, mjekëve dhe pacientëve. E ndërtuar për të ndihmuar klinikat në organizimin e termineve, profileve dhe komunikimit me pacientët në mënyrë efikase.
+# 🏥 MedPal - Digital Healthcare Platform
 
-🚀 Features kryesore
-🔐 Autentifikimi dhe Autorizimi
-Regjistrimi i pacientëve me verifikim përmes emailit (me kod).
+MedPal është një platformë digjitale për menaxhimin e klinikave, mjekëve dhe pacientëve. Ndërtuar me teknologji moderne për të ofruar një përvojë të shpejtë, të sigurt dhe të lehtë në menaxhimin e shërbimeve mjekësore.
 
-Regjistrimi i klinikave me clinicCode të sigurt.
+## 🚀 Features Kryesore
 
-Shtimi i mjekëve nga vetë klinikat.
+### Për Klinikat
+- 📋 Regjistrimi dhe menaxhimi i klinikës
+- 👨‍⚕️ Shtimi dhe menaxhimi i mjekëve
+- 📧 Ftesa për pacientë përmes emailit
+- 📅 Shikimi i të gjitha termineve të klinikës
+- 🏥 Menaxhimi i departamenteve dhe shërbimeve
+- 📊 Raporte për vizitat e pacientëve
 
-Roli i adminit për menaxhim total të platformës.
+### Për Mjekët
+- 📋 Shikimi i termineve të aprovuara dhe në pritje
+- ✅ Aprovimi ose anulimi i termineve
+- 📝 Krijimi i raporteve të vizitave
+- 🧪 Shtimi i rezultateve të analizave (me mundësi upload-i)
+- 📅 Kalendari personal i termineve
+- 🕒 Caktimi i orarit të punës
 
-📅 Menaxhimi i Termineve
-Pacientët rezervojnë termine përmes një dropdown-i me mjekët e listuar.
+### Për Pacientët
+- 📅 Rezervimi i termineve (zgjedhja e mjekut, shërbimit, datës dhe orës)
+- 📖 Historia e termineve
+- 📋 Shikimi i raporteve të vizitave
+- 🔔 Njoftime për statusin e termineve
+- 📎 Ngarkimi i dokumenteve mjekësore
+- 👤 Profili personal
 
-Terminet kanë status pending dhe mund të aprovohen nga mjekët.
+### Për Administratorët
+- 👑 Menaxhimi i të gjitha klinikave
+- 📊 Statistika të përgjithshme të platformës
+- 📈 Grafikë të rritjes së përdoruesve
+- 💰 Shikimi i të ardhurave
+- 🔍 Audit log për veprimet e rëndësishme
 
-Njoftime për konfirmime të ardhshme (mundësi për SMS/email).
+## 🛠️ Tech Stack
 
-👨‍⚕️ Dashboard për secilin rol
-Admin: menaxhon përdoruesit (verifikim, fshirje), shikon statistika, grafiqe dhe të ardhura.
+### Frontend
+- **React 19** - Biblioteka kryesore për UI
+- **Vite** - Build tool dhe development server
+- **React Router DOM 7** - Routing
+- **Bootstrap 5** - Stilizimi
+- **Chart.js** - Grafikët
+- **React Calendar** - Kalendari për termine
+- **UUID** - Gjenerimi i ID-ve unike
+- **Bcryptjs** - Hashimi i fjalëkalimeve
 
-Klinika: shton mjekë, menaxhon pacientë dhe oraret.
+### Backend & Database
+- **Supabase** - Platformë e plotë backend
+  - **PostgreSQL** - Database
+  - **Authentication** - Menaxhimi i përdoruesve
+  - **Storage** - Ruajtja e dokumenteve
+  - **Edge Functions** - Funksionet serverless (për email)
 
-Mjekët: shikojnë terminet dhe shtojnë raporte.
+### Email
+- **SMTP Gmail** - Dërgimi i email-ve përmes Edge Functions
+  - Konfigurim me Gmail App Password
+  - Template të personalizuar për ftesa
 
-Pacientët: rezervojnë termine, shohin historikun dhe profilin e tyre.
+### Deployment
+- **Frontend:** Netlify
+- **Backend:** Supabase
+- **Version Control:** GitHub
 
-📊 Statistika dhe Grafiqe
-Grafiqe mujore për rritjen e përdoruesve dhe të ardhurat.
+## 📦 Instalimi dhe Konfigurimi
 
-Statistika të përgjithshme për adminin.
-
-🧾 Gjenerim i Raporteve PDF
-Mjeku mund të gjenerojë raport për çdo vizitë.
-
-PDF automatikisht krijohet dhe ruhet në reports/.
-
-🛠️ Teknologjitë e përdorura
-Backend
-Node.js + Express
-
-MongoDB (Mongoose)
-
-JWT për autentifikim
-
-Nodemailer për verifikim me email
-
-PDFKit për raporte
-
-Render për hostim të backend-it
-
-Frontend
-React (me useState, useEffect)
-
-Bootstrap për stilizim
-
-Vite për ndërtim dhe deploy
-
-Netlify për hostim të frontend-it
-
-🌐 Deploy Links
-Frontend (Netlify):(https://medpalks.netlify.app/)
-
-Backend (Render): https://medpal-aqpz.onrender.com
-👩‍💻 Si të ekzekutoni lokalisht
-Klono projektin duke përdorur komandën **git clone https://github.com/Gentaaaa/MedPal.git**
-dhe hy në folderin e projektit me **cd MedPal.**
-Pastaj ekzekuto backend-in duke shkuar në folderin backend me komandën **cd backend**, instalo paketat me 👩‍💻 Si të ekzekutoni lokalisht
-Klono projektin duke përdorur komandën git clone https://github.com/Gentaaaa/MedPal.git dhe hy në folderin e projektit me cd MedPal.
-Pastaj ekzekuto backend-in duke shkuar në folderin backend me komandën cd backend, instalo paketat me **npm install** dhe nis serverin me **node server.js.**
-Për frontend-in, shko në folderin frontend me **cd frontend**, instalo paketat me **npm install** dhe nis frontend-in me komandën **npm run dev**.
- dhe nis serverin me node server.js.
-Për frontend-in, shko në folderin frontend me **cd frontend**, instalo paketat me **npm install** dhe nis fron
-tend-in me komandën **npm run dev**.
-
-
+### 1. Klonimi i projektit
+```bash
+git clone https://github.com/GentianaMehana/MedPal-Platform.git
+cd MedPal-Platform
