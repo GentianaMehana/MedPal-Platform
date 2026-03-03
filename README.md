@@ -55,7 +55,7 @@ MedPal është një platformë digjitale për menaxhimin e klinikave, mjekëve d
   - Template të personalizuar për ftesa
 
 ### Deployment
-- **Frontend:** Netlify
+- **Frontend:** Netlify https://medpalplatform.netlify.app
 - **Backend:** Supabase
 - **Version Control:** GitHub
 
