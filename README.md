@@ -28,12 +28,7 @@ MedPal është një platformë digjitale për menaxhimin e klinikave, mjekëve d
 - 📎 Ngarkimi i dokumenteve mjekësore
 - 👤 Profili personal
 
-### Për Administratorët
-- 👑 Menaxhimi i të gjitha klinikave
-- 📊 Statistika të përgjithshme të platformës
-- 📈 Grafikë të rritjes së përdoruesve
-- 💰 Shikimi i të ardhurave
-- 🔍 Audit log për veprimet e rëndësishme
+
 
 ## 🛠️ Tech Stack
 
