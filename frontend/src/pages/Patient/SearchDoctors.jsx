@@ -2,6 +2,42 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/medical-theme.css";
+
+const IconSearch = (p) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+  </svg>
+);
+const IconUser = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+const IconBuilding = (p) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M15 21V9h3a2 2 0 0 1 2 2v10"/>
+    <path d="M9 7h2M9 11h2M9 15h2"/>
+  </svg>
+);
+const IconCalendar = (p) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M3 10h18M8 3v4M16 3v4"/>
+  </svg>
+);
+const IconSpinner = ({ size = 24, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.2" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
 
 export default function SearchDoctors() {
   const [doctors, setDoctors] = useState([]);
@@ -40,15 +76,10 @@ export default function SearchDoctors() {
           consultation_fee,
           working_hours,
           department_id,
-          departments (
-            name
-          ),
+          departments (name),
           doctor_services (
             service_id,
-            services (
-              name,
-              price
-            )
+            services (name, price)
           )
         `)
         .eq('is_available', true);
@@ -97,217 +128,206 @@ export default function SearchDoctors() {
   };
 
   return (
-    <div className="container-fluid py-5" style={{ 
-      background: 'linear-gradient(135deg, #f5f9ff 0%, #ffffff 100%)',
-      minHeight: '100vh'
-    }}>
-      <div className="container" style={{ maxWidth: "1200px" }}>
-        <div className="card border-0 shadow-lg" style={{ borderRadius: '32px' }}>
-          <div className="card-header bg-white border-0 p-5 pb-0">
-            <h1 className="display-6 fw-bold text-center mb-2" style={{ color: '#2b6c9e' }}>
-              <i className="bi bi-search-heart me-3"></i>
-              Find a Doctor
-            </h1>
-            <p className="text-center text-muted mb-0">Search our specialist doctors by name or department</p>
-          </div>
-          
-          <div className="card-body p-5">
-            {/* Search Filters */}
-            <div className="card border-0 shadow-sm mb-5" style={{ borderRadius: '20px', background: '#f8faff' }}>
-              <div className="card-body p-4">
-                <form onSubmit={handleSearch}>
-                  <div className="row g-4">
-                    <div className="col-md-5">
-                      <label className="form-label fw-bold mb-2" style={{ color: '#2b6c9e' }}>
-                        <i className="bi bi-person me-2"></i>
-                        Doctor Name
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        className="form-control form-control-lg"
-                        style={{ 
-                          borderRadius: '14px', 
-                          border: '2px solid #e9eef3',
-                          padding: '0.8rem 1.2rem'
-                        }}
-                        placeholder="Search by name..."
-                        value={filters.name}
-                        onChange={handleFilterChange}
-                      />
-                    </div>
-                    
-                    <div className="col-md-5">
-                      <label className="form-label fw-bold mb-2" style={{ color: '#2b6c9e' }}>
-                        <i className="bi bi-building me-2"></i>
-                        Department
-                      </label>
-                      <select
-                        name="departmentId"
-                        className="form-control form-control-lg"
-                        style={{ 
-                          borderRadius: '14px', 
-                          border: '2px solid #e9eef3',
-                          padding: '0.8rem 1.2rem'
-                        }}
-                        value={filters.departmentId}
-                        onChange={handleFilterChange}
-                      >
-                        <option value="">All Departments</option>
-                        {departments.map((d) => (
-                          <option key={d.id} value={d.id}>{d.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div className="col-md-2 d-flex align-items-end">
-                      <button 
-                        type="submit" 
-                        className="btn w-100 py-3"
-                        style={{
-                          background: 'linear-gradient(135deg, #2b6c9e 0%, #1e4a6b 100%)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '14px',
-                          fontWeight: '600'
-                        }}
-                      >
-                        <i className="bi bi-search me-2"></i>
-                        Search
-                      </button>
-                    </div>
-                    
-                    <div className="col-12 text-end">
-                      <button 
-                        type="button" 
-                        className="btn btn-link"
-                        onClick={clearFilters}
-                        style={{ color: '#2b6c9e' }}
-                      >
-                        Clear filters
-                      </button>
-                    </div>
-                  </div>
-                </form>
+    <div className="container-fluid px-4 py-4">
+      {/* Page header */}
+      <div className="mb-4">
+        <p className="mp-overline mb-1">Patient</p>
+        <h1 className="mp-h2 mb-1">Find a doctor</h1>
+        <p className="mp-body" style={{ marginBottom: 0 }}>
+          Search our specialists by name or department.
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="medical-card mb-4" style={{ padding: 20 }}>
+        <form onSubmit={handleSearch}>
+          <div className="row g-3 align-items-end">
+            <div className="col-md-5">
+              <label className="medical-label">Doctor name</label>
+              <input
+                type="text"
+                name="name"
+                className="medical-input"
+                placeholder="Search by name…"
+                value={filters.name}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="col-md-4">
+              <label className="medical-label">Department</label>
+              <select
+                name="departmentId"
+                className="medical-input"
+                value={filters.departmentId}
+                onChange={handleFilterChange}
+              >
+                <option value="">All departments</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-3">
+              <div className="d-flex gap-2">
+                <button type="submit" className="medical-btn-primary flex-grow-1">
+                  <IconSearch />
+                  Search
+                </button>
+                <button
+                  type="button"
+                  className="medical-btn-outline"
+                  onClick={clearFilters}
+                  style={{ padding: '9px 12px' }}
+                  title="Clear filters"
+                >
+                  Clear
+                </button>
               </div>
             </div>
+          </div>
+        </form>
+      </div>
 
-            {/* Results */}
-            {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            ) : doctors.length === 0 ? (
-              <div className="text-center py-5">
-                <div className="display-1 mb-3" style={{ color: '#2b6c9e', opacity: '0.5' }}>🔍</div>
-                <h3>No doctors found</h3>
-                <p className="text-muted">Try adjusting your search filters</p>
-              </div>
-            ) : (
-              <>
-                <h4 className="mb-4" style={{ color: '#2b6c9e' }}>
-                  <i className="bi bi-people me-2"></i>
-                  {doctors.length} Doctors Available
-                </h4>
-                <div className="row g-4">
-                  {doctors.map((doc) => (
-                    <div key={doc.id} className="col-lg-6">
-                      <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '24px', overflow: 'hidden' }}>
-                        <div className="card-body p-4">
-                          <div className="d-flex align-items-center mb-3">
-                            <div style={{
-                              width: '80px',
-                              height: '80px',
-                              borderRadius: '50%',
-                              background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '2.5rem',
-                              marginRight: '1.5rem',
-                              color: '#2b6c9e',
-                              boxShadow: '0 4px 10px rgba(43, 108, 158, 0.2)'
-                            }}>
-                              👨‍⚕️
-                            </div>
-                            <div>
-                              <h4 className="fw-bold mb-1" style={{ color: '#2b6c9e' }}>{doc.name}</h4>
-                              <p className="mb-2">
-                                <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-2">
-                                  {doc.specialization}
-                                </span>
-                                <span className="badge bg-info bg-opacity-10 text-info px-3 py-2">
-                                  {doc.department}
-                                </span>
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <div className="row g-3 mt-2">
-                            <div className="col-md-6">
-                              <div className="d-flex align-items-center p-3 bg-light rounded-4">
-                                <div style={{ fontSize: '2rem', marginRight: '1rem' }}>💰</div>
-                                <div>
-                                  <small className="text-muted">Consultation Fee</small>
-                                  <div className="fw-bold text-success">€{doc.fee}</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="d-flex align-items-center p-3 bg-light rounded-4">
-                                <div style={{ fontSize: '2rem', marginRight: '1rem' }}>💊</div>
-                                <div>
-                                  <small className="text-muted">Services</small>
-                                  <div className="fw-bold">{doc.services.length} available</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {doc.services.length > 0 && (
-                            <div className="mt-3">
-                              <small className="text-muted d-block mb-2">Services offered:</small>
-                              <div className="d-flex flex-wrap gap-2">
-                                {doc.services.slice(0, 3).map((service, idx) => (
-                                  <span key={idx} className="badge bg-light text-dark px-3 py-2">
-                                    {service}
-                                  </span>
-                                ))}
-                                {doc.services.length > 3 && (
-                                  <span className="badge bg-light text-dark px-3 py-2">
-                                    +{doc.services.length - 3} more
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          
-                          <Link
-                            to={`/patient/book-appointment?doctorId=${doc.id}`}
-                            className="btn w-100 mt-4 py-3"
-                            style={{
-                              background: 'linear-gradient(135deg, #2b6c9e 0%, #1e4a6b 100%)',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '16px',
-                              fontWeight: '600'
-                            }}
-                          >
-                            <i className="bi bi-calendar-plus me-2"></i>
-                            Book Appointment
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
+      {/* Results */}
+      {loading ? (
+        <div className="d-flex justify-content-center py-5">
+          <div style={{ color: 'var(--mp-primary)' }}>
+            <IconSpinner />
           </div>
         </div>
-      </div>
+      ) : doctors.length === 0 ? (
+        <div className="medical-card text-center py-5">
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 56,
+              height: 56,
+              borderRadius: 14,
+              background: 'var(--mp-bg-muted)',
+              color: 'var(--mp-text-muted)',
+              marginBottom: 16,
+            }}
+          >
+            <IconSearch width={28} height={28} />
+          </div>
+          <h3 className="mp-h3 mb-1">No doctors found</h3>
+          <p className="mp-body mb-0">Try adjusting your search filters.</p>
+        </div>
+      ) : (
+        <>
+          <div className="mb-3">
+            <p className="mp-caption" style={{ marginBottom: 0 }}>
+              {doctors.length} doctor{doctors.length !== 1 ? 's' : ''} available
+            </p>
+          </div>
+
+          <div className="row g-3">
+            {doctors.map((doc) => (
+              <div key={doc.id} className="col-lg-6">
+                <div className="medical-card h-100" style={{ padding: 22 }}>
+                  <div className="d-flex align-items-center gap-3 mb-3">
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 12,
+                        background: 'var(--mp-primary-light)',
+                        color: 'var(--mp-primary)',
+                        border: '1px solid var(--mp-primary-border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <IconUser />
+                    </div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: 'var(--mp-text)',
+                          letterSpacing: '-0.01em',
+                          marginBottom: 4,
+                        }}
+                      >
+                        {doc.name}
+                      </div>
+                      <div className="d-flex flex-wrap gap-1">
+                        <span className="mp-badge" style={{ fontSize: 11 }}>
+                          {doc.specialization}
+                        </span>
+                        <span className="mp-badge mp-badge--neutral" style={{ fontSize: 11 }}>
+                          {doc.department}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="row g-2 mb-3"
+                    style={{
+                      paddingTop: 14,
+                      borderTop: '1px solid var(--mp-border)',
+                    }}
+                  >
+                    <div className="col-6">
+                      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 4 }}>
+                        Consultation fee
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--mp-success)' }}>
+                        €{doc.fee}
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 4 }}>
+                        Services
+                      </div>
+                      <div style={{ fontSize: 13.5, color: 'var(--mp-text-secondary)' }}>
+                        {doc.services.length} available
+                      </div>
+                    </div>
+                  </div>
+
+                  {doc.services.length > 0 && (
+                    <div className="mb-3">
+                      <div className="d-flex flex-wrap gap-1">
+                        {doc.services.slice(0, 3).map((service, idx) => (
+                          <span
+                            key={idx}
+                            className="mp-badge mp-badge--neutral"
+                            style={{ fontSize: 11 }}
+                          >
+                            {service}
+                          </span>
+                        ))}
+                        {doc.services.length > 3 && (
+                          <span className="mp-badge mp-badge--neutral" style={{ fontSize: 11 }}>
+                            +{doc.services.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <Link
+                    to={`/patient/book-appointment?doctorId=${doc.id}`}
+                    className="medical-btn-primary w-100"
+                  >
+                    <IconCalendar />
+                    Book appointment
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

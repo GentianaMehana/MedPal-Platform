@@ -2,6 +2,61 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/medical-theme.css";
+
+/* ---------- Icons ---------- */
+const IconArrowLeft = (p) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M19 12H5M12 19l-7-7 7-7"/>
+  </svg>
+);
+const IconUser = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+const IconBriefcase = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="2" y="7" width="20" height="14" rx="2"/>
+    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+  </svg>
+);
+const IconCalendar = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M3 10h18M8 3v4M16 3v4"/>
+  </svg>
+);
+const IconClock = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  </svg>
+);
+const IconCheck = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M4 12l5 5L20 7"/>
+  </svg>
+);
+const IconAlert = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+  </svg>
+);
+const IconSpinner = ({ size = 16, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.25" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
 
 export default function BookAppointment() {
   const [form, setForm] = useState({
@@ -30,7 +85,7 @@ export default function BookAppointment() {
   const fetchDoctors = async () => {
     try {
       console.log("Fetching doctors...");
-      
+
       const { data: doctorsData, error: doctorsError } = await supabase
         .from('doctors')
         .select(`
@@ -49,13 +104,13 @@ export default function BookAppointment() {
 
       const departmentIds = doctorsData.map(d => d.department_id).filter(Boolean);
       let departmentMap = {};
-      
+
       if (departmentIds.length > 0) {
         const { data: departmentsData } = await supabase
           .from('departments')
           .select('id, name')
           .in('id', departmentIds);
-          
+
         (departmentsData || []).forEach(dept => {
           departmentMap[dept.id] = dept.name;
         });
@@ -68,22 +123,18 @@ export default function BookAppointment() {
             .select(`
               service_id,
               price_override,
-              services (
-                id,
-                name,
-                price
-              )
+              services (id, name, price)
             `)
             .eq('doctor_id', doctor.id);
 
           const departmentName = departmentMap[doctor.department_id] || 'General';
-          
+
           const doctorServices = doctorServicesData?.map(ds => ({
             id: ds.service_id,
             name: ds.services?.name,
             price: ds.price_override || ds.services?.price || doctor.consultation_fee
           })) || [];
-          
+
           return {
             id: doctor.id,
             user_id: doctor.user_id,
@@ -98,7 +149,7 @@ export default function BookAppointment() {
           };
         })
       );
-      
+
       setDoctors(doctorsWithServices);
     } catch (err) {
       console.error("Error fetching doctors:", err);
@@ -125,18 +176,18 @@ export default function BookAppointment() {
 
   const generateAvailableDates = (workingHours) => {
     if (!workingHours) return [];
-    
+
     const dates = [];
     const today = new Date();
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 30);
-    
+
     const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    
+
     for (let d = new Date(today); d <= maxDate; d.setDate(d.getDate() + 1)) {
       const dayName = daysOfWeek[d.getDay()].toLowerCase();
       const daySchedule = workingHours[dayName];
-      
+
       if (daySchedule && daySchedule.start && daySchedule.end) {
         dates.push({
           date: new Date(d),
@@ -147,7 +198,7 @@ export default function BookAppointment() {
         });
       }
     }
-    
+
     return dates;
   };
 
@@ -156,10 +207,10 @@ export default function BookAppointment() {
     setForm(prev => ({ ...prev, doctorId: doctor.id, serviceId: "", date: "", time: "" }));
     setWorkingHours(doctor.working_hours);
     setServices(doctor.services || []);
-    
+
     const dates = generateAvailableDates(doctor.working_hours);
     setAvailableDates(dates);
-    
+
     setStep(2);
   };
 
@@ -171,7 +222,7 @@ export default function BookAppointment() {
   const handleDateSelect = async (date) => {
     setForm(prev => ({ ...prev, date, time: "" }));
     setTakenTimes([]);
-    
+
     if (form.doctorId && date) {
       await fetchTakenTimes(form.doctorId, date);
     }
@@ -190,7 +241,7 @@ export default function BookAppointment() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!form.doctorId || !form.serviceId || !form.date || !form.time) {
       setMessage({ text: "Please complete all steps", type: "warning" });
       return;
@@ -201,7 +252,7 @@ export default function BookAppointment() {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      
+
       const { data: patient, error: patientError } = await supabase
         .from('patients')
         .select('id')
@@ -224,7 +275,7 @@ export default function BookAppointment() {
 
       if (error) throw error;
 
-      setMessage({ text: "✅ Appointment booked successfully!", type: "success" });
+      setMessage({ text: "Appointment booked successfully.", type: "success" });
       setTimeout(() => navigate("/patient"), 2000);
     } catch (err) {
       console.error("Booking error:", err);
@@ -252,372 +303,464 @@ export default function BookAppointment() {
     while (current < end) {
       const timeStr = current.toTimeString().slice(0, 5);
       const isAvailable = !takenTimes.includes(timeStr);
-      
+
       slots.push({
         time: timeStr,
         available: isAvailable,
         display: current.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
       });
-      
+
       current.setMinutes(current.getMinutes() + 30);
     }
 
     return slots;
   };
 
-  const getSelectedService = () => {
-    return services.find(s => s.id === form.serviceId);
-  };
-
   const formatDateForDisplay = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
+  const StepHeading = ({ num, title }) => (
+    <div className="d-flex align-items-center gap-3 mb-4">
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: 999,
+          background: 'var(--mp-primary)',
+          color: '#fff',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 600,
+          fontSize: 14,
+          letterSpacing: '-0.01em',
+          flexShrink: 0,
+        }}
+      >
+        {num}
+      </div>
+      <h2 className="mp-h3" style={{ marginBottom: 0 }}>{title}</h2>
+    </div>
+  );
+
+  const BackButton = () => (
+    <button
+      type="button"
+      className="medical-btn-outline"
+      onClick={handleBack}
+      style={{ padding: '7px 12px', fontSize: 13 }}
+    >
+      <IconArrowLeft />
+      Back
+    </button>
+  );
+
+  const InfoAlert = ({ icon, title, subtitle }) => (
+    <div
+      style={{
+        padding: 16,
+        background: 'var(--mp-primary-lighter)',
+        border: '1px solid var(--mp-primary-border)',
+        borderRadius: 'var(--mp-radius)',
+        marginBottom: 24,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 14,
+      }}
+    >
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 10,
+          background: '#fff',
+          color: 'var(--mp-primary)',
+          border: '1px solid var(--mp-primary-border)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </div>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--mp-text)' }}>
+          {title}
+        </div>
+        {subtitle && (
+          <div style={{ fontSize: 12.5, color: 'var(--mp-text-secondary)', marginTop: 2 }}>
+            {subtitle}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const renderStep = () => {
-    switch(step) {
+    switch (step) {
       case 1:
         return (
-          <div className="step-container">
-            <h4 className="medical-label mb-4" style={{ fontSize: '1.2rem', color: '#2b6c9e' }}>
-              <span style={{ background: '#2b6c9e', color: 'white', borderRadius: '50%', width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', fontSize: '0.9rem' }}>1</span>
-              Select a Doctor
-            </h4>
+          <>
+            <StepHeading num={1} title="Select a doctor" />
             {doctors.length === 0 ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }} role="status">
-                  <span className="visually-hidden">Loading...</span>
+              <div className="d-flex justify-content-center py-5">
+                <div style={{ color: 'var(--mp-primary)' }}>
+                  <IconSpinner size={28} />
                 </div>
-                <p className="mt-3 text-muted">Loading available doctors...</p>
               </div>
             ) : (
-              <div className="row g-4">
-                {doctors.map((doc) => (
-                  <div key={doc.id} className="col-lg-6">
-                    <div 
-                      className={`card h-100 border-0 shadow-sm ${selectedDoctor?.id === doc.id ? 'border-primary' : ''}`}
-                      style={{ 
-                        cursor: 'pointer', 
-                        borderLeft: selectedDoctor?.id === doc.id ? '4px solid #2b6c9e' : '4px solid transparent',
-                        transition: 'all 0.3s ease',
-                        borderRadius: '16px',
-                        overflow: 'hidden'
-                      }}
-                      onClick={() => handleDoctorSelect(doc)}
-                    >
-                      <div className="card-body p-4">
-                        <div className="d-flex align-items-center mb-3">
-                          <div style={{
-                            width: '70px',
-                            height: '70px',
-                            borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '2.2rem',
-                            marginRight: '1rem',
-                            color: '#2b6c9e',
-                            boxShadow: '0 4px 10px rgba(43, 108, 158, 0.2)'
-                          }}>
-                            👨‍⚕️
+              <div className="row g-3">
+                {doctors.map((doc) => {
+                  const isSelected = selectedDoctor?.id === doc.id;
+                  return (
+                    <div key={doc.id} className="col-lg-6">
+                      <div
+                        className="medical-card"
+                        style={{
+                          padding: 22,
+                          cursor: 'pointer',
+                          borderColor: isSelected ? 'var(--mp-primary)' : 'var(--mp-border)',
+                          boxShadow: isSelected ? 'var(--mp-shadow-md)' : undefined,
+                        }}
+                        onClick={() => handleDoctorSelect(doc)}
+                      >
+                        <div className="d-flex align-items-center gap-3 mb-3">
+                          <div
+                            style={{
+                              width: 48,
+                              height: 48,
+                              borderRadius: 12,
+                              background: 'var(--mp-primary-light)',
+                              color: 'var(--mp-primary)',
+                              border: '1px solid var(--mp-primary-border)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            <IconUser />
                           </div>
-                          <div>
-                            <h5 className="fw-bold mb-1" style={{ color: '#2b6c9e' }}>{doc.name}</h5>
-                            <p className="mb-0 text-muted small">
-                              <span className="badge bg-light text-dark me-2">{doc.specialization}</span>
-                              <span><i className="bi bi-building me-1"></i>{doc.department}</span>
-                            </p>
+                          <div style={{ minWidth: 0 }}>
+                            <div
+                              style={{
+                                fontSize: 15,
+                                fontWeight: 600,
+                                color: 'var(--mp-text)',
+                                letterSpacing: '-0.01em',
+                                marginBottom: 4,
+                              }}
+                            >
+                              {doc.name}
+                            </div>
+                            <div style={{ fontSize: 12.5, color: 'var(--mp-text-muted)' }}>
+                              {doc.specialization} · {doc.department}
+                            </div>
                           </div>
                         </div>
-                        
-                        <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+
+                        <div
+                          className="d-flex justify-content-between align-items-center"
+                          style={{
+                            paddingTop: 14,
+                            borderTop: '1px solid var(--mp-border)',
+                          }}
+                        >
                           <div>
-                            <small className="text-muted d-block">Consultation fee</small>
-                            <span className="fw-bold text-success fs-5">€{doc.fee}</span>
+                            <div className="mp-overline" style={{ fontSize: 10.5 }}>Fee</div>
+                            <div style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--mp-success)' }}>
+                              €{doc.fee}
+                            </div>
                           </div>
                           <div>
-                            <small className="text-muted d-block">Services</small>
-                            <span className="fw-bold">{doc.services?.length || 0} available</span>
+                            <div className="mp-overline" style={{ fontSize: 10.5 }}>Services</div>
+                            <div style={{ fontSize: 13.5, color: 'var(--mp-text-secondary)' }}>
+                              {doc.services?.length || 0}
+                            </div>
                           </div>
                         </div>
-                        
-                        <button className="btn w-100 mt-3 py-2" style={{
-                          background: selectedDoctor?.id === doc.id ? '#2b6c9e' : '#f8f9fa',
-                          color: selectedDoctor?.id === doc.id ? 'white' : '#2b6c9e',
-                          border: '1px solid #2b6c9e',
-                          borderRadius: '12px',
-                          fontWeight: '500'
-                        }}>
-                          {selectedDoctor?.id === doc.id ? '✓ Selected' : 'Select Doctor'}
-                        </button>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
-          </div>
+          </>
         );
 
       case 2:
         return (
-          <div className="step-container">
-            <div className="d-flex align-items-center mb-4">
-              <button className="btn btn-outline-secondary btn-sm me-3 px-3" onClick={handleBack} style={{ borderRadius: '30px' }}>
-                <i className="bi bi-arrow-left me-1"></i> Back
-              </button>
-              <h4 className="medical-label mb-0" style={{ fontSize: '1.2rem', color: '#2b6c9e' }}>
-                <span style={{ background: '#2b6c9e', color: 'white', borderRadius: '50%', width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', fontSize: '0.9rem' }}>2</span>
-                Select Service
-              </h4>
+          <>
+            <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+              <StepHeading num={2} title="Select a service" />
+              <BackButton />
             </div>
-            
-            <div className="alert alert-info bg-light border-0 mb-4" style={{ borderRadius: '16px', padding: '1rem 1.5rem' }}>
-              <div className="d-flex align-items-center">
-                <div style={{ fontSize: '2rem', marginRight: '1rem' }}>👨‍⚕️</div>
-                <div>
-                  <strong>Dr. {selectedDoctor?.name}</strong>
-                  <p className="mb-0 text-muted small">{selectedDoctor?.specialization} • {selectedDoctor?.department}</p>
-                </div>
-              </div>
-            </div>
-            
+
+            <InfoAlert
+              icon={<IconUser />}
+              title={`Dr. ${selectedDoctor?.name}`}
+              subtitle={`${selectedDoctor?.specialization} · ${selectedDoctor?.department}`}
+            />
+
             {services.length === 0 ? (
-              <div className="text-center py-5">
-                <div className="display-4 mb-3" style={{ color: '#2b6c9e', opacity: '0.5' }}>💊</div>
-                <h5>No services available</h5>
-                <p className="text-muted">This doctor doesn't have any services yet.</p>
+              <div className="medical-card text-center py-5">
+                <h3 className="mp-h3 mb-1">No services available</h3>
+                <p className="mp-body mb-0">This doctor does not offer services yet.</p>
               </div>
             ) : (
               <div className="row g-3">
-                {services.map((service) => (
-                  <div key={service.id} className="col-md-6">
-                    <div 
-                      className={`card border-0 shadow-sm h-100 ${form.serviceId === service.id ? 'border-primary' : ''}`}
-                      style={{ 
-                        cursor: 'pointer',
-                        borderLeft: form.serviceId === service.id ? '4px solid #2b6c9e' : '4px solid transparent',
-                        borderRadius: '16px',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onClick={() => handleServiceSelect(service.id)}
-                    >
-                      <div className="card-body p-4">
+                {services.map((service) => {
+                  const isSelected = form.serviceId === service.id;
+                  return (
+                    <div key={service.id} className="col-md-6">
+                      <div
+                        className="medical-card"
+                        style={{
+                          padding: 22,
+                          cursor: 'pointer',
+                          borderColor: isSelected ? 'var(--mp-primary)' : 'var(--mp-border)',
+                          boxShadow: isSelected ? 'var(--mp-shadow-md)' : undefined,
+                        }}
+                        onClick={() => handleServiceSelect(service.id)}
+                      >
                         <div className="d-flex justify-content-between align-items-start">
                           <div>
-                            <h6 className="fw-bold mb-2" style={{ color: '#2b6c9e' }}>{service.name}</h6>
-                            <div className="d-flex align-items-center">
-                              <span className="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                                €{service.price}
-                              </span>
+                            <div
+                              style={{
+                                fontSize: 14.5,
+                                fontWeight: 600,
+                                color: 'var(--mp-text)',
+                                marginBottom: 8,
+                                letterSpacing: '-0.005em',
+                              }}
+                            >
+                              {service.name}
                             </div>
+                            <span className="mp-badge" style={{ background: 'var(--mp-success-bg)', color: 'var(--mp-success)', borderColor: 'var(--mp-success-bd)' }}>
+                              €{service.price}
+                            </span>
                           </div>
-                          <div style={{ fontSize: '2rem', color: '#2b6c9e', opacity: '0.7' }}>💊</div>
+                          <div style={{ color: 'var(--mp-primary)', opacity: 0.7 }}>
+                            <IconBriefcase />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
-          </div>
+          </>
         );
 
       case 3:
         return (
-          <div className="step-container">
-            <div className="d-flex align-items-center mb-4">
-              <button className="btn btn-outline-secondary btn-sm me-3 px-3" onClick={handleBack} style={{ borderRadius: '30px' }}>
-                <i className="bi bi-arrow-left me-1"></i> Back
-              </button>
-              <h4 className="medical-label mb-0" style={{ fontSize: '1.2rem', color: '#2b6c9e' }}>
-                <span style={{ background: '#2b6c9e', color: 'white', borderRadius: '50%', width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', fontSize: '0.9rem' }}>3</span>
-                Select Date
-              </h4>
+          <>
+            <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+              <StepHeading num={3} title="Select a date" />
+              <BackButton />
             </div>
-            
-            <div className="alert alert-info bg-light border-0 mb-4" style={{ borderRadius: '16px', padding: '1rem 1.5rem' }}>
-              <div className="d-flex align-items-center">
-                <div style={{ fontSize: '2rem', marginRight: '1rem' }}>💊</div>
-                <div>
-                  <strong>{services.find(s => s.id === form.serviceId)?.name}</strong>
-                  <p className="mb-0 text-muted small">Service selected</p>
+
+            <InfoAlert
+              icon={<IconBriefcase />}
+              title={services.find(s => s.id === form.serviceId)?.name}
+              subtitle="Service selected"
+            />
+
+            <div className="medical-card" style={{ padding: 24 }}>
+              <p className="mp-overline mb-3">Available dates for Dr. {selectedDoctor?.name}</p>
+
+              {availableDates.length === 0 ? (
+                <p className="mp-caption mb-0">No available dates in the next 30 days.</p>
+              ) : (
+                <div className="row g-2">
+                  {availableDates.map((dateInfo) => {
+                    const isSelected = form.date === dateInfo.dateStr;
+                    return (
+                      <div key={dateInfo.dateStr} className="col-md-4 col-lg-3">
+                        <button
+                          type="button"
+                          className={isSelected ? 'medical-btn-primary' : 'medical-btn-outline'}
+                          style={{
+                            width: '100%',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            padding: '12px 14px',
+                            textAlign: 'left',
+                          }}
+                          onClick={() => handleDateSelect(dateInfo.dateStr)}
+                        >
+                          <div style={{ fontSize: 13.5, fontWeight: 600 }}>
+                            {dateInfo.dateStr}
+                          </div>
+                          <div style={{ fontSize: 12, opacity: 0.85, textTransform: 'capitalize' }}>
+                            {dateInfo.dayName}
+                          </div>
+                          <div style={{ fontSize: 11.5, opacity: 0.75, marginTop: 2 }}>
+                            {dateInfo.start} – {dateInfo.end}
+                          </div>
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+              )}
             </div>
-            
-            <div className="row">
-              <div className="col-12">
-                <div className="card border-0 shadow-sm p-4" style={{ borderRadius: '20px' }}>
-                  <label className="form-label fw-bold mb-3" style={{ color: '#2b6c9e' }}>
-                    <i className="bi bi-calendar3 me-2"></i>
-                    Available dates for Dr. {selectedDoctor?.name}
-                  </label>
-                  
-                  <div className="row g-3">
-                    {availableDates.length === 0 ? (
-                      <p className="text-muted">No available dates in the next 30 days</p>
-                    ) : (
-                      availableDates.map((dateInfo) => (
-                        <div key={dateInfo.dateStr} className="col-md-4 col-lg-3">
-                          <button
-                            className={`btn w-100 py-3 ${form.date === dateInfo.dateStr ? 'btn-primary' : 'btn-outline-primary'}`}
-                            style={{ 
-                              borderRadius: '12px',
-                              fontWeight: '500'
-                            }}
-                            onClick={() => handleDateSelect(dateInfo.dateStr)}
-                          >
-                            <div className="fw-bold">{dateInfo.dateStr}</div>
-                            <small>{dateInfo.dayName}</small>
-                            <div className="small text-muted">{dateInfo.start} - {dateInfo.end}</div>
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </>
         );
 
-      case 4:
+      case 4: {
         const timeSlots = generateTimeSlots();
-        const selectedDateInfo = getSelectedDateInfo();
         const selectedSvc = services.find(s => s.id === form.serviceId);
-        
+
         return (
-          <div className="step-container">
-            <div className="d-flex align-items-center mb-4">
-              <button className="btn btn-outline-secondary btn-sm me-3 px-3" onClick={handleBack} style={{ borderRadius: '30px' }}>
-                <i className="bi bi-arrow-left me-1"></i> Back
-              </button>
-              <h4 className="medical-label mb-0" style={{ fontSize: '1.2rem', color: '#2b6c9e' }}>
-                <span style={{ background: '#2b6c9e', color: 'white', borderRadius: '50%', width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', fontSize: '0.9rem' }}>4</span>
-                Select Time
-              </h4>
+          <>
+            <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+              <StepHeading num={4} title="Select a time" />
+              <BackButton />
             </div>
-            
-            <div className="alert alert-info border-0 mb-4" style={{ borderRadius: '16px', background: '#e3f2fd' }}>
-              <div className="d-flex align-items-center">
-                <i className="bi bi-calendar-check fs-3 me-3" style={{ color: '#2b6c9e' }}></i>
-                <div>
-                  <strong>{formatDateForDisplay(form.date)}</strong>
-                </div>
-              </div>
-            </div>
-            
+
+            <InfoAlert
+              icon={<IconCalendar />}
+              title={formatDateForDisplay(form.date)}
+            />
+
             {timeSlots.length === 0 ? (
-              <p className="text-muted text-center py-4">No available time slots for this date</p>
+              <p className="mp-caption text-center py-4">No available time slots for this date.</p>
             ) : (
-              <div className="row g-3">
-                {timeSlots.map((slot) => (
-                  <div key={slot.time} className="col-4 col-md-3 col-lg-2">
-                    <button
-                      type="button"
-                      className={`btn w-100 py-3 ${slot.available ? 'btn-outline-primary' : 'btn-outline-secondary disabled'}`}
-                      style={{ 
-                        borderRadius: '14px',
-                        background: form.time === slot.time ? '#2b6c9e' : '',
-                        color: form.time === slot.time ? 'white' : '',
-                        borderWidth: '2px',
-                        fontWeight: '500'
-                      }}
-                      onClick={() => handleTimeSelect(slot.time)}
-                      disabled={!slot.available}
-                    >
-                      {slot.display}
-                      {!slot.available && <small className="d-block text-muted">Booked</small>}
-                    </button>
-                  </div>
-                ))}
+              <div className="row g-2 mb-4">
+                {timeSlots.map((slot) => {
+                  const isSelected = form.time === slot.time;
+                  return (
+                    <div key={slot.time} className="col-4 col-md-3 col-lg-2">
+                      <button
+                        type="button"
+                        disabled={!slot.available}
+                        className={isSelected ? 'medical-btn-primary' : 'medical-btn-outline'}
+                        style={{
+                          width: '100%',
+                          padding: '10px 6px',
+                          fontSize: 13,
+                          opacity: slot.available ? 1 : 0.4,
+                        }}
+                        onClick={() => handleTimeSelect(slot.time)}
+                      >
+                        <div>{slot.display}</div>
+                        {!slot.available && (
+                          <div style={{ fontSize: 10.5, opacity: 0.7 }}>Booked</div>
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
             {form.time && (
-              <div className="mt-5">
-                <div className="card border-0 shadow" style={{ borderRadius: '24px', overflow: 'hidden' }}>
-                  <div className="card-header bg-white border-0 p-4">
-                    <h5 className="fw-bold mb-0" style={{ color: '#2b6c9e' }}>
-                      <i className="bi bi-check2-circle me-2"></i>
-                      Appointment Summary
-                    </h5>
-                  </div>
-                  <div className="card-body p-4 pt-0">
-                    <div className="row g-4">
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center p-3 bg-light rounded-4">
-                          <div style={{ fontSize: '2rem', marginRight: '1rem' }}>👨‍⚕️</div>
-                          <div>
-                            <small className="text-muted">Doctor</small>
-                            <div className="fw-bold">Dr. {selectedDoctor?.name}</div>
-                          </div>
-                        </div>
+              <div className="medical-card" style={{ padding: 24 }}>
+                <p className="mp-overline mb-3">Appointment summary</p>
+
+                <div className="row g-3 mb-4">
+                  <div className="col-md-6">
+                    <div
+                      style={{
+                        padding: 14,
+                        background: 'var(--mp-bg-subtle)',
+                        border: '1px solid var(--mp-border)',
+                        borderRadius: 'var(--mp-radius)',
+                      }}
+                    >
+                      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 4 }}>
+                        Doctor
                       </div>
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center p-3 bg-light rounded-4">
-                          <div style={{ fontSize: '2rem', marginRight: '1rem' }}>💊</div>
-                          <div>
-                            <small className="text-muted">Service</small>
-                            <div className="fw-bold">{selectedSvc?.name}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center p-3 bg-light rounded-4">
-                          <div style={{ fontSize: '2rem', marginRight: '1rem' }}>📅</div>
-                          <div>
-                            <small className="text-muted">Date & Time</small>
-                            <div className="fw-bold">{form.date} at {form.time}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center p-3 bg-success bg-opacity-10 rounded-4">
-                          <div style={{ fontSize: '2rem', marginRight: '1rem' }}>💰</div>
-                          <div>
-                            <small className="text-muted">Total</small>
-                            <div className="fw-bold text-success fs-4">€{selectedSvc?.price || selectedDoctor?.fee}</div>
-                          </div>
-                        </div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--mp-text)' }}>
+                        Dr. {selectedDoctor?.name}
                       </div>
                     </div>
-                    
-                    <button
-                      onClick={handleSubmit}
-                      className="btn w-100 py-3 mt-4"
+                  </div>
+                  <div className="col-md-6">
+                    <div
                       style={{
-                        background: 'linear-gradient(135deg, #2b6c9e 0%, #1e4a6b 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '16px',
-                        fontWeight: '600',
-                        fontSize: '1.1rem'
+                        padding: 14,
+                        background: 'var(--mp-bg-subtle)',
+                        border: '1px solid var(--mp-border)',
+                        borderRadius: 'var(--mp-radius)',
                       }}
-                      disabled={loading}
                     >
-                      {loading ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          Booking...
-                        </>
-                      ) : (
-                        '✅ Confirm Appointment'
-                      )}
-                    </button>
+                      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 4 }}>
+                        Service
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--mp-text)' }}>
+                        {selectedSvc?.name}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div
+                      style={{
+                        padding: 14,
+                        background: 'var(--mp-bg-subtle)',
+                        border: '1px solid var(--mp-border)',
+                        borderRadius: 'var(--mp-radius)',
+                      }}
+                    >
+                      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 4 }}>
+                        Date & time
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--mp-text)' }}>
+                        {form.date} at {form.time}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div
+                      style={{
+                        padding: 14,
+                        background: 'var(--mp-success-bg)',
+                        border: '1px solid var(--mp-success-bd)',
+                        borderRadius: 'var(--mp-radius)',
+                      }}
+                    >
+                      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 4 }}>
+                        Total
+                      </div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--mp-success)', letterSpacing: '-0.01em' }}>
+                        €{selectedSvc?.price || selectedDoctor?.fee}
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <button
+                  onClick={handleSubmit}
+                  className="medical-btn-primary medical-btn--lg w-100"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <IconSpinner size={16} color="#fff" />
+                      Booking…
+                    </>
+                  ) : (
+                    <>
+                      <IconCheck />
+                      Confirm appointment
+                    </>
+                  )}
+                </button>
               </div>
             )}
-          </div>
+          </>
         );
+      }
 
       default:
         return null;
@@ -625,60 +768,87 @@ export default function BookAppointment() {
   };
 
   return (
-    <div className="container-fluid py-5" style={{ 
-      background: 'linear-gradient(135deg, #f5f9ff 0%, #ffffff 100%)',
-      minHeight: '100vh'
-    }}>
-      <div className="container" style={{ maxWidth: "1200px" }}>
-        <div className="card border-0 shadow-lg" style={{ borderRadius: '32px', overflow: 'hidden' }}>
-          <div className="card-header bg-white border-0 p-5 pb-0">
-            <h1 className="display-6 fw-bold text-center mb-2" style={{ color: '#2b6c9e' }}>
-              <i className="bi bi-calendar-plus me-3"></i>
-              Book an Appointment
-            </h1>
-            <p className="text-center text-muted mb-0">Schedule your visit with our specialist doctors</p>
-          </div>
-          
-          <div className="card-body p-5">
-            {/* Progress Steps */}
-            <div className="d-flex justify-content-between mb-5 px-3 position-relative">
-              <div className="position-absolute top-50 start-0 end-0" style={{ height: '2px', background: '#e9eef3', zIndex: 0, transform: 'translateY(-50%)' }}></div>
-              {[1, 2, 3, 4].map((s) => (
-                <div key={s} className="text-center position-relative" style={{ zIndex: 1, background: 'white', padding: '0 15px' }}>
-                  <div 
-                    className="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm"
-                    style={{
-                      width: '50px',
-                      height: '50px',
-                      background: step >= s ? 'linear-gradient(135deg, #2b6c9e 0%, #1e4a6b 100%)' : 'white',
-                      color: step >= s ? 'white' : '#2b6c9e',
-                      fontWeight: 'bold',
-                      fontSize: '1.2rem',
-                      border: step >= s ? 'none' : '2px solid #2b6c9e',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    {s}
-                  </div>
-                  <small className={step >= s ? 'fw-bold' : 'text-muted'} style={{ color: step >= s ? '#2b6c9e' : '' }}>
-                    {s === 1 ? 'Doctor' : s === 2 ? 'Service' : s === 3 ? 'Date' : 'Time'}
-                  </small>
+    <div className="container-fluid px-4 py-4" style={{ maxWidth: 960 }}>
+      {/* Page header */}
+      <div className="mb-4">
+        <p className="mp-overline mb-1">Patient</p>
+        <h1 className="mp-h2 mb-1">Book an appointment</h1>
+        <p className="mp-body" style={{ marginBottom: 0 }}>
+          Schedule your visit in four simple steps.
+        </p>
+      </div>
+
+      {/* Progress */}
+      <div className="medical-card mb-4" style={{ padding: 20 }}>
+        <div className="d-flex justify-content-between align-items-center gap-2">
+          {[1, 2, 3, 4].map((s) => {
+            const active = step >= s;
+            const labels = ['Doctor', 'Service', 'Date', 'Time'];
+            return (
+              <div key={s} className="d-flex align-items-center gap-2 flex-grow-1">
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 999,
+                    background: active ? 'var(--mp-primary)' : 'var(--mp-bg-muted)',
+                    color: active ? '#fff' : 'var(--mp-text-muted)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 600,
+                    fontSize: 13,
+                    flexShrink: 0,
+                    border: active ? 'none' : '1px solid var(--mp-border)',
+                  }}
+                >
+                  {s}
                 </div>
-              ))}
-            </div>
-
-            {message.text && (
-              <div className={`alert alert-${message.type} alert-dismissible fade show mb-4`} style={{ borderRadius: '16px' }}>
-                <i className={`bi bi-${message.type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2`}></i>
-                {message.text}
-                <button type="button" className="btn-close" onClick={() => setMessage({ text: "", type: "" })}></button>
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: active ? 600 : 400,
+                    color: active ? 'var(--mp-text)' : 'var(--mp-text-muted)',
+                    letterSpacing: '-0.005em',
+                    display: window.innerWidth < 576 ? 'none' : 'inline',
+                  }}
+                >
+                  {labels[s - 1]}
+                </span>
+                {s < 4 && (
+                  <div
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      background: step > s ? 'var(--mp-primary)' : 'var(--mp-border)',
+                      marginLeft: 8,
+                    }}
+                  />
+                )}
               </div>
-            )}
-
-            {renderStep()}
-          </div>
+            );
+          })}
         </div>
       </div>
+
+      {message.text && (
+        <div
+          className={`medical-alert ${
+            message.type === 'success' ? 'medical-alert-success' :
+            message.type === 'warning' ? 'medical-alert-warning' :
+            'medical-alert-danger'
+          } mb-4`}
+        >
+          <span className="medical-alert__icon">
+            {message.type === 'success' ? <IconCheck /> : <IconAlert />}
+          </span>
+          <div>{message.text}</div>
+        </div>
+      )}
+
+      {renderStep()}
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

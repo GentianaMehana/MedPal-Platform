@@ -1,303 +1,550 @@
-/* frontend/src/styles/medical-theme.css */
+/* ============================================================
+   MedPal Design System — v2
+   Enterprise Healthcare SaaS
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --medical-primary: #2b6c9e;      /* Blu e thellë mjekësore */
-  --medical-primary-light: #4a8fc1; /* Blu më e çelur */
-  --medical-primary-soft: #e3f2fd;  /* Blu shumë e çelur */
-  --medical-secondary: #47b5ff;     /* Blu e ndritshme */
-  --medical-accent: #00a8cc;        /* Blu akuariumi */
-  --medical-success: #2ecc71;       /* Gjelbër për sukses */
-  --medical-warning: #f39c12;       /* Portokalli për paralajmërim */
-  --medical-danger: #e74c3c;        /* E kuqe për gabime */
-  --medical-gray: #7f8c8d;          /* Gri për tekst dytësor */
-  --medical-light: #f8fafc;         /* Bardhë me nuancë blu */
-  --medical-white: #ffffff;         /* E bardhë e pastër */
-  --medical-dark: #2c3e50;          /* Blu e errët për tekst */
-  
-  --shadow-sm: 0 2px 4px rgba(43, 108, 158, 0.1);
-  --shadow-md: 0 4px 6px rgba(43, 108, 158, 0.1);
-  --shadow-lg: 0 10px 15px rgba(43, 108, 158, 0.1);
-  --shadow-hover: 0 20px 25px rgba(43, 108, 158, 0.15);
-  
-  --border-radius-sm: 8px;
-  --border-radius-md: 12px;
-  --border-radius-lg: 16px;
-  --border-radius-xl: 24px;
+  /* ---- Surface & Background ---- */
+  --mp-bg:            #FFFFFF;
+  --mp-bg-subtle:     #FAFBFC;
+  --mp-bg-muted:      #F4F6F8;
+  --mp-bg-inset:      #EEF1F5;
+  --mp-bg-inverse:    #0A0F1A;
+
+  /* ---- Text ---- */
+  --mp-text:            #0A0F1A;
+  --mp-text-secondary:  #46566B;
+  --mp-text-muted:      #6B7A8F;
+  --mp-text-faint:      #9BA8B8;
+  --mp-text-inverse:    #FFFFFF;
+
+  /* ---- Border ---- */
+  --mp-border:          #E4E8EE;
+  --mp-border-strong:   #D2D8E0;
+  --mp-border-focus:    #1F6FEB;
+
+  /* ---- Primary (medical blue) ---- */
+  --mp-primary:         #0B4F87;
+  --mp-primary-hover:   #093F6C;
+  --mp-primary-active:  #072F51;
+  --mp-primary-light:   #EAF2FA;
+  --mp-primary-lighter: #F4F8FC;
+  --mp-primary-border:  #C5DBEE;
+
+  /* ---- Accent (subtle teal for positive/medical) ---- */
+  --mp-accent:          #0E7C66;
+  --mp-accent-light:    #E6F4F1;
+
+  /* ---- Status ---- */
+  --mp-success:      #0E7C66;
+  --mp-success-bg:   #E6F4F1;
+  --mp-success-bd:   #B8DFD5;
+
+  --mp-danger:       #B42318;
+  --mp-danger-bg:    #FDECEA;
+  --mp-danger-bd:    #F3C7C2;
+
+  --mp-warning:      #B54708;
+  --mp-warning-bg:   #FEF6E7;
+  --mp-warning-bd:   #F2D9A8;
+
+  --mp-info:         #0B4F87;
+  --mp-info-bg:      #EAF2FA;
+  --mp-info-bd:      #C5DBEE;
+
+  /* ---- Shape ---- */
+  --mp-radius-xs: 4px;
+  --mp-radius-sm: 6px;
+  --mp-radius:    8px;
+  --mp-radius-md: 10px;
+  --mp-radius-lg: 14px;
+  --mp-radius-xl: 20px;
+
+  /* ---- Shadows (multi-layer for realism) ---- */
+  --mp-shadow-xs:
+    0 1px 2px rgba(10, 15, 26, 0.04);
+  --mp-shadow-sm:
+    0 1px 2px rgba(10, 15, 26, 0.04),
+    0 1px 3px rgba(10, 15, 26, 0.06);
+  --mp-shadow:
+    0 1px 2px rgba(10, 15, 26, 0.04),
+    0 4px 12px rgba(10, 15, 26, 0.06);
+  --mp-shadow-md:
+    0 2px 4px rgba(10, 15, 26, 0.04),
+    0 8px 24px rgba(10, 15, 26, 0.08);
+  --mp-shadow-lg:
+    0 4px 8px rgba(10, 15, 26, 0.04),
+    0 16px 48px rgba(10, 15, 26, 0.12);
+  --mp-ring-focus:
+    0 0 0 3px rgba(31, 111, 235, 0.15);
+  --mp-ring-primary:
+    0 0 0 3px rgba(11, 79, 135, 0.14);
+
+  /* ---- Type ---- */
+  --mp-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mp-font-mono: ui-monospace, 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  /* ---- Motion ---- */
+  --mp-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --mp-dur-fast: 120ms;
+  --mp-dur: 180ms;
+  --mp-dur-slow: 320ms;
 }
 
+/* ============================================================
+   Reset & Base
+   ============================================================ */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #f5f9ff 0%, #e8f0fe 100%);
-  color: var(--medical-dark);
-  min-height: 100vh;
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Cards */
+body {
+  font-family: var(--mp-font);
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mp-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+p { margin: 0; }
+
+a {
+  color: var(--mp-primary);
+  text-decoration: none;
+  transition: color var(--mp-dur-fast) var(--mp-ease);
+}
+a:hover { color: var(--mp-primary-hover); }
+
+::selection {
+  background: var(--mp-primary-light);
+  color: var(--mp-primary-active);
+}
+
+/* ============================================================
+   Typography Scale
+   ============================================================ */
+.mp-display {
+  font-size: clamp(36px, 5.5vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--mp-text);
+}
+.mp-h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.mp-h2 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.mp-h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+.mp-lead {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--mp-text-secondary);
+  letter-spacing: -0.005em;
+}
+.mp-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--mp-text-secondary);
+}
+.mp-caption {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mp-text-muted);
+}
+.mp-overline {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mp-text-muted);
+}
+
+/* ============================================================
+   Container
+   ============================================================ */
+.mp-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.mp-container--narrow { max-width: 960px; }
+.mp-container--wide   { max-width: 1320px; }
+
+/* ============================================================
+   Cards
+   ============================================================ */
 .medical-card {
-  background: var(--medical-white);
-  border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(43, 108, 158, 0.1);
+  background: var(--mp-bg);
+  border: 1px solid var(--mp-border);
+  border-radius: var(--mp-radius-lg);
+  padding: 28px;
+  box-shadow: var(--mp-shadow-xs);
+  transition:
+    box-shadow var(--mp-dur) var(--mp-ease),
+    border-color var(--mp-dur) var(--mp-ease),
+    transform var(--mp-dur) var(--mp-ease);
 }
 
 .medical-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-2px);
+  box-shadow: var(--mp-shadow);
+  border-color: var(--mp-border-strong);
 }
 
-/* Buttons */
-.medical-btn-primary {
-  background: linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-primary-light) 100%);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--border-radius-md);
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
+.medical-card--flat {
+  box-shadow: none;
+}
+.medical-card--flat:hover {
+  box-shadow: none;
 }
 
-.medical-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  background: linear-gradient(135deg, var(--medical-primary-light) 0%, var(--medical-primary) 100%);
+.medical-card--inset {
+  background: var(--mp-bg-subtle);
+  box-shadow: none;
 }
 
-.medical-btn-outline {
-  background: transparent;
-  color: var(--medical-primary);
-  border: 2px solid var(--medical-primary);
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--border-radius-md);
-  font-weight: 600;
-  transition: all 0.3s ease;
+/* ============================================================
+   Labels & Inputs
+   ============================================================ */
+.medical-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--mp-text);
+  margin-bottom: 6px;
 }
 
-.medical-btn-outline:hover {
-  background: var(--medical-primary);
-  color: white;
+.medical-label .required {
+  color: var(--mp-danger);
+  margin-left: 2px;
 }
 
-/* Sidebars */
-.medical-sidebar {
-  background: linear-gradient(180deg, var(--medical-white) 0%, var(--medical-light) 100%);
-  border-right: 1px solid rgba(43, 108, 158, 0.1);
-  box-shadow: var(--shadow-md);
+.medical-hint {
+  display: block;
+  font-size: 12.5px;
+  color: var(--mp-text-muted);
+  margin-top: 6px;
+  line-height: 1.45;
 }
 
-.medical-sidebar-patient {
-  background: linear-gradient(180deg, var(--medical-primary) 0%, var(--medical-primary-light) 100%);
-}
-
-.medical-sidebar-doctor {
-  background: linear-gradient(180deg, #1e4a6b 0%, var(--medical-primary) 100%);
-}
-
-.medical-sidebar-clinic {
-  background: linear-gradient(180deg, #0d3e5c 0%, #1e4a6b 100%);
-}
-
-/* Navigation links */
-.medical-nav-link {
-  color: var(--medical-dark);
-  padding: 0.75rem 1rem;
-  border-radius: var(--border-radius-md);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.medical-nav-link:hover {
-  background: var(--medical-primary-soft);
-  color: var(--medical-primary);
-  transform: translateX(5px);
-}
-
-.medical-nav-link.active {
-  background: var(--medical-primary);
-  color: white;
-}
-
-/* Tables */
-.medical-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 0.5rem;
-}
-
-.medical-table th {
-  background: var(--medical-primary-soft);
-  color: var(--medical-primary);
-  font-weight: 600;
-  padding: 1rem;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.medical-table td {
-  background: var(--medical-white);
-  padding: 1rem;
-  border-radius: var(--border-radius-sm);
-  box-shadow: var(--shadow-sm);
-}
-
-.medical-table tr:hover td {
-  background: var(--medical-light);
-  box-shadow: var(--shadow-md);
-}
-
-/* Badges */
-.medical-badge {
-  padding: 0.35rem 0.75rem;
-  border-radius: 50px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.badge-pending {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.badge-approved {
-  background: #d4edda;
-  color: #155724;
-}
-
-.badge-canceled {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-/* Forms */
 .medical-input {
-  border: 2px solid #e2e8f0;
-  border-radius: var(--border-radius-md);
-  padding: 0.75rem 1rem;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  display: block;
+  width: 100%;
+  padding: 10px 13px;
+  font-size: 14.5px;
+  font-family: var(--mp-font);
+  font-weight: 400;
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  border: 1px solid var(--mp-border-strong);
+  border-radius: var(--mp-radius);
+  transition:
+    border-color var(--mp-dur-fast) var(--mp-ease),
+    box-shadow var(--mp-dur-fast) var(--mp-ease),
+    background var(--mp-dur-fast) var(--mp-ease);
+  outline: none;
+  line-height: 1.4;
+}
+
+.medical-input::placeholder {
+  color: var(--mp-text-faint);
+}
+
+.medical-input:hover:not(:disabled):not(:focus) {
+  border-color: #B8C2CE;
 }
 
 .medical-input:focus {
-  border-color: var(--medical-primary);
-  box-shadow: 0 0 0 3px rgba(43, 108, 158, 0.1);
+  border-color: var(--mp-primary);
+  box-shadow: var(--mp-ring-primary);
+  background: var(--mp-bg);
+}
+
+.medical-input:disabled {
+  background: var(--mp-bg-inset);
+  color: var(--mp-text-muted);
+  cursor: not-allowed;
+  border-color: var(--mp-border);
+}
+
+.medical-input--error {
+  border-color: var(--mp-danger);
+}
+.medical-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.14);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.medical-btn-primary,
+.medical-btn-outline,
+.medical-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 14.5px;
+  font-weight: 500;
+  font-family: var(--mp-font);
+  letter-spacing: -0.005em;
+  border-radius: var(--mp-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--mp-dur-fast) var(--mp-ease),
+    border-color var(--mp-dur-fast) var(--mp-ease),
+    color var(--mp-dur-fast) var(--mp-ease),
+    box-shadow var(--mp-dur-fast) var(--mp-ease),
+    transform var(--mp-dur-fast) var(--mp-ease);
+  line-height: 1.3;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.medical-btn-primary {
+  color: #FFFFFF;
+  background: var(--mp-primary);
+  border: 1px solid var(--mp-primary);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(10, 15, 26, 0.08);
+}
+
+.medical-btn-primary:hover:not(:disabled) {
+  background: var(--mp-primary-hover);
+  border-color: var(--mp-primary-hover);
+  color: #FFFFFF;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 4px rgba(10, 15, 26, 0.12);
+}
+
+.medical-btn-primary:active:not(:disabled) {
+  background: var(--mp-primary-active);
+  border-color: var(--mp-primary-active);
+  transform: translateY(0.5px);
+}
+
+.medical-btn-primary:focus-visible {
   outline: none;
+  box-shadow: var(--mp-ring-primary), 0 1px 2px rgba(10, 15, 26, 0.08);
 }
 
-.medical-label {
-  font-weight: 600;
-  color: var(--medical-primary);
-  margin-bottom: 0.5rem;
-  display: block;
+.medical-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* Alerts */
+.medical-btn-outline {
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  border: 1px solid var(--mp-border-strong);
+  box-shadow: 0 1px 2px rgba(10, 15, 26, 0.03);
+}
+
+.medical-btn-outline:hover:not(:disabled) {
+  border-color: var(--mp-primary);
+  color: var(--mp-primary);
+  background: var(--mp-primary-lighter);
+}
+
+.medical-btn-outline:focus-visible {
+  outline: none;
+  box-shadow: var(--mp-ring-primary);
+}
+
+.medical-btn-ghost {
+  color: var(--mp-text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+.medical-btn-ghost:hover:not(:disabled) {
+  background: var(--mp-bg-muted);
+  color: var(--mp-text);
+}
+
+.medical-btn--lg { padding: 12px 22px; font-size: 15px; }
+.medical-btn--sm { padding: 7px 12px; font-size: 13px; }
+
+/* ============================================================
+   Alerts
+   ============================================================ */
 .medical-alert {
-  padding: 1rem;
-  border-radius: var(--border-radius-md);
-  margin-bottom: 1rem;
-  border-left: 4px solid transparent;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  border-radius: var(--mp-radius);
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1.55;
 }
 
-.alert-success {
-  background: #d4edda;
-  border-left-color: #28a745;
-  color: #155724;
+.medical-alert__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: inline-flex;
 }
 
-.alert-danger {
-  background: #f8d7da;
-  border-left-color: #dc3545;
-  color: #721c24;
+.medical-alert-info {
+  background: var(--mp-info-bg);
+  border-color: var(--mp-info-bd);
+  color: var(--mp-primary-active);
+}
+.medical-alert-success {
+  background: var(--mp-success-bg);
+  border-color: var(--mp-success-bd);
+  color: #0A5E4E;
+}
+.medical-alert-danger {
+  background: var(--mp-danger-bg);
+  border-color: var(--mp-danger-bd);
+  color: #8A1A12;
+}
+.medical-alert-warning {
+  background: var(--mp-warning-bg);
+  border-color: var(--mp-warning-bd);
+  color: #7A2F03;
 }
 
-.alert-info {
-  background: var(--medical-primary-soft);
-  border-left-color: var(--medical-primary);
-  color: var(--medical-primary);
+/* ============================================================
+   Badges & Chips
+   ============================================================ */
+.mp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: 999px;
+  background: var(--mp-primary-light);
+  color: var(--mp-primary-active);
+  border: 1px solid var(--mp-primary-border);
+  line-height: 1.4;
 }
 
-/* Dashboard headers */
-.medical-header {
-  background: linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-primary-light) 100%);
-  padding: 2rem;
-  border-radius: var(--border-radius-lg);
-  margin-bottom: 2rem;
-  color: white;
-  box-shadow: var(--shadow-lg);
+.mp-badge--neutral {
+  background: var(--mp-bg-muted);
+  color: var(--mp-text-secondary);
+  border-color: var(--mp-border);
 }
 
-.medical-header h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+.mp-badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
-.medical-header p {
-  font-size: 1.1rem;
-  opacity: 0.95;
+/* ============================================================
+   Dividers
+   ============================================================ */
+.mp-divider {
+  height: 1px;
+  background: var(--mp-border);
+  border: 0;
+  margin: 24px 0;
 }
 
-/* Stats cards */
-.stat-card {
-  background: var(--medical-white);
-  border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-md);
-  border-bottom: 3px solid var(--medical-primary);
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-hover);
-}
-
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--medical-primary);
-  margin: 0.5rem 0;
-}
-
-.stat-label {
-  color: var(--medical-gray);
-  font-size: 0.9rem;
+.mp-divider--labeled {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mp-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin: 24px 0;
+}
+.mp-divider--labeled::before,
+.mp-divider--labeled::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--mp-border);
 }
 
-/* Loading spinner */
-.medical-spinner {
-  border: 3px solid var(--medical-primary-soft);
-  border-top-color: var(--medical-primary);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Footer */
+/* ============================================================
+   Footer
+   ============================================================ */
 .medical-footer {
-  background: var(--medical-white);
-  padding: 1.5rem;
-  text-align: center;
-  color: var(--medical-gray);
-  border-top: 1px solid rgba(43, 108, 158, 0.1);
-  margin-top: 2rem;
+  padding: 32px 0;
+  background: var(--mp-bg);
+  border-top: 1px solid var(--mp-border);
+  color: var(--mp-text-muted);
+  font-size: 13px;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes mp-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mp-fade-in-only {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes mp-scale-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.mp-fade-in { animation: mp-fade-in var(--mp-dur-slow) var(--mp-ease) both; }
+.mp-scale-in { animation: mp-scale-in var(--mp-dur-slow) var(--mp-ease) both; }
+
+/* ============================================================
+   Grid Pattern (for hero backgrounds)
+   ============================================================ */
+.mp-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(10, 15, 26, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 15, 26, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.mp-radial-fade {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(11, 79, 135, 0.06), transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 100%, rgba(14, 124, 102, 0.04), transparent 60%);
 }

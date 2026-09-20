@@ -3,6 +3,39 @@ import { supabase } from "../../lib/supabase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/medical-theme.css";
 
+const IconClock = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  </svg>
+);
+const IconSave = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+    <path d="M17 21v-8H7v8M7 3v5h8"/>
+  </svg>
+);
+const IconCheck = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+);
+const IconAlert = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+  </svg>
+);
+const IconSpinner = ({ size = 16, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.25" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
+
 export default function DoctorWorkingHours() {
   const [workingHours, setWorkingHours] = useState({
     monday: { start: "09:00", end: "17:00" },
@@ -25,7 +58,7 @@ export default function DoctorWorkingHours() {
   const getDoctorId = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      
+
       const { data: doctor, error: doctorError } = await supabase
         .from('doctors')
         .select('id, working_hours')
@@ -33,7 +66,7 @@ export default function DoctorWorkingHours() {
         .maybeSingle();
 
       if (doctorError) throw doctorError;
-      
+
       if (doctor) {
         setDoctorId(doctor.id);
         if (doctor.working_hours) {
@@ -65,7 +98,7 @@ export default function DoctorWorkingHours() {
 
       if (error) throw error;
 
-      setMessage({ text: "Working hours saved successfully!", type: "success" });
+      setMessage({ text: "Working hours saved successfully.", type: "success" });
     } catch (err) {
       setMessage({ text: err.message, type: "danger" });
     } finally {
@@ -83,65 +116,112 @@ export default function DoctorWorkingHours() {
     sunday: "Sunday",
   };
 
+  const alertClass = message.type === 'success' ? 'medical-alert-success' : 'medical-alert-danger';
+
   return (
-    <div className="container-fluid px-4 py-4">
-      <div className="medical-header mb-4">
-        <h2 className="mb-2">🕒 Working Hours</h2>
-        <p className="mb-0">Set your availability for patient appointments</p>
+    <div className="container-fluid px-4 py-4" style={{ maxWidth: 720 }}>
+      {/* Page header */}
+      <div className="mb-4">
+        <p className="mp-overline mb-1">Doctor</p>
+        <h1 className="mp-h2 mb-1">Working hours</h1>
+        <p className="mp-body" style={{ marginBottom: 0 }}>
+          Set your weekly availability for patient appointments.
+        </p>
       </div>
 
-      <div className="row">
-        <div className="col-lg-8 mx-auto">
-          {message.text && (
-            <div className={`alert alert-${message.type} alert-dismissible fade show mb-4`} style={{ borderRadius: 'var(--border-radius-md)' }}>
-              {message.text}
-              <button type="button" className="btn-close" onClick={() => setMessage({ text: "", type: "" })}></button>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="medical-card">
-            {Object.entries(workingHours).map(([day, hours]) => (
-              <div key={day} className="mb-4">
-                <label className="medical-label">{dayLabels[day]}</label>
-                <div className="row g-2">
-                  <div className="col-5">
-                    <input
-                      type="time"
-                      className="medical-input w-100"
-                      value={hours.start}
-                      onChange={(e) => handleChange(day, "start", e.target.value)}
-                    />
-                  </div>
-                  <div className="col-2 text-center pt-2">to</div>
-                  <div className="col-5">
-                    <input
-                      type="time"
-                      className="medical-input w-100"
-                      value={hours.end}
-                      onChange={(e) => handleChange(day, "end", e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            <button
-              type="submit"
-              className="medical-btn-primary w-100 py-3 mt-3"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2"></span>
-                  Saving...
-                </>
-              ) : (
-                '💾 Save Working Hours'
-              )}
-            </button>
-          </form>
+      {message.text && (
+        <div className={`medical-alert ${alertClass} mb-4`}>
+          <span className="medical-alert__icon">
+            {message.type === 'success' ? <IconCheck /> : <IconAlert />}
+          </span>
+          <div>{message.text}</div>
         </div>
-      </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="medical-card mb-4" style={{ padding: 26 }}>
+          <div className="d-flex align-items-center gap-2 mb-3">
+            <span style={{ color: 'var(--mp-primary)', display: 'inline-flex' }}>
+              <IconClock />
+            </span>
+            <p className="mp-overline" style={{ marginBottom: 0 }}>Weekly availability</p>
+          </div>
+
+          <ul className="list-unstyled mb-0">
+            {Object.entries(workingHours).map(([day, hours], i) => (
+              <li
+                key={day}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '14px 0',
+                  borderTop: i === 0 ? 'none' : '1px solid var(--mp-border)',
+                }}
+              >
+                <div
+                  style={{
+                    width: 110,
+                    fontSize: 13.5,
+                    fontWeight: 500,
+                    color: 'var(--mp-text)',
+                    letterSpacing: '-0.005em',
+                    flexShrink: 0,
+                  }}
+                >
+                  {dayLabels[day]}
+                </div>
+
+                <input
+                  type="time"
+                  className="medical-input"
+                  value={hours.start}
+                  onChange={(e) => handleChange(day, "start", e.target.value)}
+                  style={{ flex: 1 }}
+                />
+
+                <span
+                  style={{
+                    color: 'var(--mp-text-muted)',
+                    fontSize: 13,
+                    flexShrink: 0,
+                  }}
+                >
+                  to
+                </span>
+
+                <input
+                  type="time"
+                  className="medical-input"
+                  value={hours.end}
+                  onChange={(e) => handleChange(day, "end", e.target.value)}
+                  style={{ flex: 1 }}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <button
+          type="submit"
+          className="medical-btn-primary medical-btn--lg w-100"
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <IconSpinner size={16} color="#fff" />
+              Saving…
+            </>
+          ) : (
+            <>
+              <IconSave />
+              Save working hours
+            </>
+          )}
+        </button>
+      </form>
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

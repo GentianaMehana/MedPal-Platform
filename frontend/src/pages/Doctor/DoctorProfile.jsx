@@ -3,6 +3,14 @@ import { supabase } from "../../lib/supabase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/medical-theme.css";
 
+const IconSpinner = ({ size = 24, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.2" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
+
 export default function DoctorProfile() {
   const [user, setUser] = useState(null);
   const [doctorDetails, setDoctorDetails] = useState(null);
@@ -17,10 +25,9 @@ export default function DoctorProfile() {
     try {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (!userData) return;
-      
+
       setUser(userData);
 
-      // Get doctor details
       const { data: doctorData, error: doctorError } = await supabase
         .from('doctors')
         .select('*')
@@ -28,17 +35,16 @@ export default function DoctorProfile() {
         .maybeSingle();
 
       if (doctorError) throw doctorError;
-      
+
       setDoctorDetails(doctorData);
 
-      // Get department if exists
       if (doctorData?.department_id) {
         const { data: deptData } = await supabase
           .from('departments')
           .select('name')
           .eq('id', doctorData.department_id)
           .maybeSingle();
-        
+
         setDepartment(deptData);
       }
 
@@ -50,161 +56,195 @@ export default function DoctorProfile() {
   };
 
   const formatTime = (time) => {
-    if (!time) return '-';
+    if (!time) return '—';
     return time;
   };
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <div className="medical-spinner mx-auto"></div>
+      <div className="d-flex justify-content-center py-5">
+        <div style={{ color: 'var(--mp-primary)' }}>
+          <IconSpinner />
+        </div>
+        <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
+  const DetailBox = ({ label, value, accent }) => (
+    <div
+      style={{
+        padding: 18,
+        background: 'var(--mp-bg-subtle)',
+        border: '1px solid var(--mp-border)',
+        borderRadius: 'var(--mp-radius)',
+      }}
+    >
+      <div className="mp-overline" style={{ fontSize: 10.5, marginBottom: 6 }}>
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: 16,
+          fontWeight: 500,
+          color: accent || 'var(--mp-text)',
+          letterSpacing: '-0.01em',
+          lineHeight: 1.35,
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="container-fluid px-4 py-4">
-      <div className="medical-header mb-4">
-        <h2 className="mb-2">👤 My Profile</h2>
-        <p className="mb-0">View your professional information</p>
+    <div className="container-fluid px-4 py-4" style={{ maxWidth: 900 }}>
+      {/* Page header */}
+      <div className="mb-4">
+        <p className="mp-overline mb-1">Doctor</p>
+        <h1 className="mp-h2 mb-1">My profile</h1>
+        <p className="mp-body" style={{ marginBottom: 0 }}>
+          Your professional information as seen by your clinic.
+        </p>
       </div>
 
-      <div className="row">
-        <div className="col-lg-8 mx-auto">
-          <div className="medical-card">
-            <div className="text-center mb-4">
-              <div style={{
-                width: '100px',
-                height: '100px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-primary-light) 100%)',
-                margin: '0 auto 1rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '2.5rem',
-                color: 'white',
-                boxShadow: 'var(--shadow-md)'
-              }}>
-                👨‍⚕️
-              </div>
-              <h3 className="fw-bold mb-1">Dr. {user?.name}</h3>
-              <p className="text-muted mb-2">{user?.email}</p>
-              {doctorDetails?.doctor_code && (
-                <span className="medical-badge" style={{
-                  background: 'var(--medical-primary-soft)',
-                  color: 'var(--medical-primary)'
-                }}>
-                  {doctorDetails.doctor_code}
-                </span>
-              )}
-            </div>
+      <div className="medical-card mb-4" style={{ padding: 32 }}>
+        {/* Avatar + identity */}
+        <div className="text-center mb-4">
+          <div
+            style={{
+              width: 84,
+              height: 84,
+              borderRadius: 20,
+              background: 'var(--mp-primary)',
+              color: '#fff',
+              margin: '0 auto 16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 32,
+              fontWeight: 700,
+              letterSpacing: '-0.03em',
+              boxShadow: '0 1px 3px rgba(10,15,26,0.12)',
+            }}
+          >
+            {user?.name?.charAt(0)?.toUpperCase() || 'D'}
+          </div>
+          <h2 className="mp-h2 mb-1" style={{ fontSize: 22 }}>
+            Dr. {user?.name}
+          </h2>
+          <p className="mp-caption mb-3">{user?.email}</p>
+          {doctorDetails?.doctor_code && (
+            <span
+              className="mp-badge"
+              style={{
+                fontFamily: 'var(--mp-font-mono)',
+                fontSize: 12,
+                padding: '5px 12px',
+              }}
+            >
+              {doctorDetails.doctor_code}
+            </span>
+          )}
+        </div>
 
-            <hr style={{ borderColor: 'var(--medical-primary-soft)' }} />
+        <hr className="mp-divider" />
 
-            <div className="row g-4">
-              <div className="col-md-6">
-                <div className="p-3" style={{ background: 'var(--medical-light)', borderRadius: 'var(--border-radius-md)' }}>
-                  <h6 className="medical-label mb-2">Department</h6>
-                  <p className="mb-0 fs-5">{department?.name || 'Not assigned'}</p>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="p-3" style={{ background: 'var(--medical-light)', borderRadius: 'var(--border-radius-md)' }}>
-                  <h6 className="medical-label mb-2">Specialization</h6>
-                  <p className="mb-0 fs-5">{doctorDetails?.specialization || 'General Practitioner'}</p>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="p-3" style={{ background: 'var(--medical-light)', borderRadius: 'var(--border-radius-md)' }}>
-                  <h6 className="medical-label mb-2">Consultation Fee</h6>
-                  <p className="mb-0 fs-5 text-success">€{doctorDetails?.consultation_fee || 50}</p>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="p-3" style={{ background: 'var(--medical-light)', borderRadius: 'var(--border-radius-md)' }}>
-                  <h6 className="medical-label mb-2">Phone</h6>
-                  <p className="mb-0 fs-5">{doctorDetails?.phone || user?.phone || 'Not provided'}</p>
-                </div>
-              </div>
-            </div>
-
-            {doctorDetails?.languages_spoken && doctorDetails.languages_spoken.length > 0 && (
-              <>
-                <hr style={{ borderColor: 'var(--medical-primary-soft)' }} />
-                <div className="mb-4">
-                  <h6 className="medical-label mb-3">Languages Spoken</h6>
-                  <div className="d-flex flex-wrap gap-2">
-                    {doctorDetails.languages_spoken.map((lang, index) => (
-                      <span key={index} className="badge" style={{
-                        background: 'var(--medical-primary-soft)',
-                        color: 'var(--medical-primary)',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '50px'
-                      }}>
-                        {lang}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {doctorDetails?.education && doctorDetails.education.length > 0 && (
-              <>
-                <hr style={{ borderColor: 'var(--medical-primary-soft)' }} />
-                <div className="mb-4">
-                  <h6 className="medical-label mb-3">Education</h6>
-                  <div className="d-flex flex-wrap gap-2">
-                    {doctorDetails.education.map((edu, index) => (
-                      <span key={index} className="badge" style={{
-                        background: 'var(--medical-primary-soft)',
-                        color: 'var(--medical-primary)',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '50px'
-                      }}>
-                        {edu}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {doctorDetails?.working_hours && (
-              <>
-                <hr style={{ borderColor: 'var(--medical-primary-soft)' }} />
-                <div>
-                  <h6 className="medical-label mb-3">Working Hours</h6>
-                  <div className="table-responsive">
-                    <table className="table table-sm">
-                      <thead style={{ background: 'var(--medical-primary-soft)' }}>
-                        <tr>
-                          <th className="p-2">Day</th>
-                          <th className="p-2">Start</th>
-                          <th className="p-2">End</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(doctorDetails.working_hours).map(([day, hours]) => (
-                          <tr key={day}>
-                            <td className="p-2 text-capitalize fw-bold">{day}</td>
-                            <td className="p-2">{formatTime(hours.start)}</td>
-                            <td className="p-2">{formatTime(hours.end)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </>
-            )}
+        {/* Detail grid */}
+        <div className="row g-3">
+          <div className="col-md-6">
+            <DetailBox
+              label="Department"
+              value={department?.name || 'Not assigned'}
+            />
+          </div>
+          <div className="col-md-6">
+            <DetailBox
+              label="Specialization"
+              value={doctorDetails?.specialization || 'General practitioner'}
+            />
+          </div>
+          <div className="col-md-6">
+            <DetailBox
+              label="Consultation fee"
+              value={`€${doctorDetails?.consultation_fee || 50}`}
+              accent="var(--mp-success)"
+            />
+          </div>
+          <div className="col-md-6">
+            <DetailBox
+              label="Phone"
+              value={doctorDetails?.phone || user?.phone || 'Not provided'}
+            />
           </div>
         </div>
+
+        {/* Languages */}
+        {doctorDetails?.languages_spoken && doctorDetails.languages_spoken.length > 0 && (
+          <>
+            <hr className="mp-divider" />
+            <div>
+              <p className="mp-overline mb-3">Languages spoken</p>
+              <div className="d-flex flex-wrap gap-2">
+                {doctorDetails.languages_spoken.map((lang, index) => (
+                  <span key={index} className="mp-badge">{lang}</span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Education */}
+        {doctorDetails?.education && doctorDetails.education.length > 0 && (
+          <>
+            <hr className="mp-divider" />
+            <div>
+              <p className="mp-overline mb-3">Education</p>
+              <div className="d-flex flex-wrap gap-2">
+                {doctorDetails.education.map((edu, index) => (
+                  <span key={index} className="mp-badge mp-badge--neutral">{edu}</span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Working hours */}
+        {doctorDetails?.working_hours && (
+          <>
+            <hr className="mp-divider" />
+            <div>
+              <p className="mp-overline mb-3">Working hours</p>
+              <div className="row g-2">
+                {Object.entries(doctorDetails.working_hours).map(([day, hours]) => (
+                  <div className="col-6 col-md-4" key={day}>
+                    <div
+                      style={{
+                        padding: '10px 14px',
+                        background: 'var(--mp-bg-subtle)',
+                        border: '1px solid var(--mp-border)',
+                        borderRadius: 'var(--mp-radius-sm)',
+                      }}
+                    >
+                      <div
+                        className="mp-overline"
+                        style={{ fontSize: 10.5, marginBottom: 4, textTransform: 'capitalize' }}
+                      >
+                        {day}
+                      </div>
+                      <div style={{ fontSize: 13.5, color: 'var(--mp-text)' }}>
+                        {formatTime(hours.start)} – {formatTime(hours.end)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

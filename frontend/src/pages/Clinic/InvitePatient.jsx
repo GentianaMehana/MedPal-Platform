@@ -2,18 +2,50 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import "../../styles/medical-theme.css";
 
+const IconSend = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+  </svg>
+);
+const IconCopy = (p) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="9" y="9" width="13" height="13" rx="2"/>
+    <path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+  </svg>
+);
+const IconAlert = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+  </svg>
+);
+const IconCheck = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+);
+const IconSpinner = ({ size = 16, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.25" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
+
 export default function InvitePatient() {
-  const [formData, setFormData] = useState({ 
-    first_name: "", 
+  const [formData, setFormData] = useState({
+    first_name: "",
     last_name: "",
-    email: "" 
+    email: ""
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [clinicData, setClinicData] = useState(null);
   const [showLink, setShowLink] = useState(null);
 
-  // Merr të dhënat e klinikës
   useEffect(() => {
     getClinicData();
   }, []);
@@ -22,7 +54,7 @@ export default function InvitePatient() {
     try {
       const clinicUser = JSON.parse(localStorage.getItem("user"));
       if (!clinicUser?.id) return;
-      
+
       const { data, error } = await supabase
         .from('clinics')
         .select('id, name')
@@ -43,7 +75,7 @@ export default function InvitePatient() {
   };
 
   const generateToken = () => {
-    return Math.random().toString(36).substring(2, 15) + 
+    return Math.random().toString(36).substring(2, 15) +
            Math.random().toString(36).substring(2, 15);
   };
 
@@ -65,7 +97,6 @@ export default function InvitePatient() {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
 
-      // Ruaj ftesën në Supabase
       const { error: dbError } = await supabase
         .from('invitations')
         .insert([{
@@ -82,7 +113,6 @@ export default function InvitePatient() {
       const registerLink = `http://localhost:5173/complete-registration/patient?token=${token}`;
       const patientName = `${formData.first_name} ${formData.last_name}`.trim();
 
-      // Thirr Edge Function për të dërguar email
       const { error: emailError } = await supabase.functions.invoke('send-invitation-smtp', {
         body: {
           to_email: formData.email,
@@ -94,151 +124,161 @@ export default function InvitePatient() {
 
       if (emailError) {
         console.error('Email error:', emailError);
-        setMessage(`⚠️ Invitation saved but email failed. Share this link manually.`);
+        setMessage(`Invitation saved but email delivery failed. Share this link manually.`);
         setShowLink(registerLink);
       } else {
-        setMessage(`✅ Invitation sent to ${formData.email}!`);
+        setMessage(`Invitation sent to ${formData.email}.`);
         setShowLink(registerLink);
         setFormData({ first_name: "", last_name: "", email: "" });
       }
 
     } catch (err) {
       console.error("Error:", err);
-      setMessage(`❌ Error: ${err.message}`);
+      setMessage(`Error: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  const messageType =
+    message.startsWith("Invitation sent") ? "success" :
+    message.startsWith("Invitation saved") ? "warning" : "danger";
+
+  const alertClass =
+    messageType === "success" ? "medical-alert-success" :
+    messageType === "warning" ? "medical-alert-warning" : "medical-alert-danger";
+
+  const alertIcon =
+    messageType === "success" ? <IconCheck /> : <IconAlert />;
+
   return (
-    <div className="container-fluid px-4 py-4">
-      <div className="medical-header mb-4">
-        <h2 className="mb-2">
-          <i className="bi bi-envelope-plus me-2"></i>
-          Invite New Patient
-        </h2>
-        <p className="mb-0">Send an invitation to a new patient</p>
+    <div className="container-fluid px-4 py-4" style={{ maxWidth: 720 }}>
+      {/* Page header */}
+      <div className="mb-4">
+        <p className="mp-overline mb-1">Clinic</p>
+        <h1 className="mp-h2 mb-1">Invite a patient</h1>
+        <p className="mp-body" style={{ marginBottom: 0 }}>
+          Send a registration link to onboard a new patient.
+        </p>
       </div>
 
-      <div className="row">
-        <div className="col-lg-8 mx-auto">
-          {/* Mesazhet */}
-          {message && (
-            <div className={`alert ${message.includes('✅') ? 'alert-success' : message.includes('⚠️') ? 'alert-warning' : 'alert-danger'} alert-dismissible fade show mb-4`}>
-              {message}
-              <button type="button" className="btn-close" onClick={() => setMessage("")}></button>
-            </div>
-          )}
-
-          {/* Linku manual kur deshton email-i */}
-          {showLink && message.includes('⚠️') && (
-            <div className="medical-card bg-light mb-4">
-              <div className="card-body">
-                <h6 className="text-warning mb-3">
-                  <i className="bi bi-link-45deg me-2"></i>
-                  Share this link with the patient:
-                </h6>
-                <div className="input-group">
-                  <input 
-                    type="text" 
-                    className="medical-input flex-grow-1" 
-                    value={showLink} 
-                    readOnly 
-                  />
-                  <button 
-                    className="medical-btn-outline" 
-                    type="button"
-                    onClick={() => copyToClipboard(showLink)}
-                  >
-                    <i className="bi bi-clipboard me-2"></i>
-                    Copy
-                  </button>
-                </div>
-                <small className="text-muted d-block mt-2">
-                  This link will expire in 7 days.
-                </small>
-              </div>
-            </div>
-          )}
-          
-          {/* Forma kryesore */}
-          <div className="medical-card">
-            <form onSubmit={handleSubmit}>
-              <div className="row">
-                <div className="col-md-6 mb-4">
-                  <label className="medical-label">First Name *</label>
-                  <input
-                    type="text"
-                    className="medical-input w-100"
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleChange}
-                    required
-                    disabled={loading}
-                    placeholder="Enter first name"
-                  />
-                </div>
-                <div className="col-md-6 mb-4">
-                  <label className="medical-label">Last Name *</label>
-                  <input
-                    type="text"
-                    className="medical-input w-100"
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleChange}
-                    required
-                    disabled={loading}
-                    placeholder="Enter last name"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="medical-label">Email Address *</label>
-                <input
-                  type="email"
-                  className="medical-input w-100"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  disabled={loading}
-                  placeholder="patient@example.com"
-                />
-              </div>
-
-              {!clinicData && !loading && (
-                <div className="alert alert-info mb-4">
-                  <div className="d-flex align-items-center">
-                    <div className="spinner-border spinner-border-sm me-2" role="status">
-                      <span className="visually-hidden">Loading...</span>
-                    </div>
-                    <span>Loading clinic data...</span>
-                  </div>
-                </div>
-              )}
-
-              <button 
-                type="submit" 
-                className="medical-btn-primary w-100 py-3" 
-                disabled={loading || !clinicData}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Sending Invitation...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-send me-2"></i>
-                    Send Invitation
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
+      {message && (
+        <div className={`medical-alert ${alertClass} mb-4`}>
+          <span className="medical-alert__icon">{alertIcon}</span>
+          <div>{message}</div>
         </div>
+      )}
+
+      {showLink && messageType === "warning" && (
+        <div className="medical-card mb-4" style={{ padding: 20 }}>
+          <p className="mp-overline mb-2">Manual invitation link</p>
+          <div className="d-flex gap-2 flex-wrap">
+            <input
+              type="text"
+              className="medical-input flex-grow-1"
+              value={showLink}
+              readOnly
+              style={{ fontFamily: 'var(--mp-font-mono)', fontSize: 13 }}
+            />
+            <button
+              type="button"
+              className="medical-btn-outline"
+              onClick={() => copyToClipboard(showLink)}
+            >
+              <IconCopy />
+              Copy
+            </button>
+          </div>
+          <p className="mp-caption mt-2 mb-0">This link expires in 7 days.</p>
+        </div>
+      )}
+
+      {!clinicData && !loading && (
+        <div className="medical-alert medical-alert-info mb-4">
+          <span className="medical-alert__icon">
+            <IconSpinner size={16} />
+          </span>
+          <div>Loading clinic data…</div>
+        </div>
+      )}
+
+      <div className="medical-card" style={{ padding: 26 }}>
+        <p className="mp-overline mb-3">Patient details</p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="row g-3 mb-3">
+            <div className="col-md-6">
+              <label className="medical-label">
+                First name <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                className="medical-input"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="First name"
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="medical-label">
+                Last name <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                className="medical-input"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                placeholder="Last name"
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="medical-label">
+              Email address <span className="required">*</span>
+            </label>
+            <input
+              type="email"
+              className="medical-input"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              placeholder="patient@example.com"
+            />
+            <span className="medical-hint">
+              The patient will receive a registration link at this address.
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            className="medical-btn-primary medical-btn--lg w-100"
+            disabled={loading || !clinicData}
+          >
+            {loading ? (
+              <>
+                <IconSpinner size={16} color="#fff" />
+                Sending invitation…
+              </>
+            ) : (
+              <>
+                <IconSend />
+                Send invitation
+              </>
+            )}
+          </button>
+        </form>
       </div>
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

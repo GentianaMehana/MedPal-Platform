@@ -2,6 +2,70 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/medical-theme.css";
+
+/* ---------- Icons ---------- */
+const IconCalendar = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M3 10h18M8 3v4M16 3v4"/>
+  </svg>
+);
+const IconCheckCircle = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+);
+const IconClock = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  </svg>
+);
+const IconUser = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+const IconFileText = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <path d="M14 2v6h6M9 13h6M9 17h6"/>
+  </svg>
+);
+const IconHistory = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/>
+    <path d="M12 7v5l3 2"/>
+  </svg>
+);
+const IconLogout = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <path d="M16 17l5-5-5-5M21 12H9"/>
+  </svg>
+);
+const IconArrowRight = (p) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M5 12h14M13 5l7 7-7 7"/>
+  </svg>
+);
+const IconSpinner = ({ size = 24, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.2" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
 
 export default function PatientDashboard() {
   const [user, setUser] = useState(null);
@@ -28,7 +92,6 @@ export default function PatientDashboard() {
       }
       setUser(localUser);
 
-      // Get patient id
       const { data: patient, error: patientError } = await supabase
         .from('patients')
         .select('id')
@@ -40,12 +103,11 @@ export default function PatientDashboard() {
         setLoading(false);
         return;
       }
-      
+
       setPatientId(patient.id);
 
       const today = new Date().toISOString().split('T')[0];
-      
-      // Get upcoming appointments
+
       const { data: upcoming, error: upcomingError } = await supabase
         .from('appointments')
         .select(`
@@ -54,9 +116,7 @@ export default function PatientDashboard() {
           time,
           status,
           doctor_id,
-          doctors (
-            name
-          )
+          doctors (name)
         `)
         .eq('patient_id', patient.id)
         .gte('date', today)
@@ -67,7 +127,6 @@ export default function PatientDashboard() {
       if (upcomingError) throw upcomingError;
       setUpcomingAppointments(upcoming || []);
 
-      // Get appointment stats
       const { data: allAppointments, error: allError } = await supabase
         .from('appointments')
         .select('status')
@@ -98,151 +157,271 @@ export default function PatientDashboard() {
   };
 
   const quickActions = [
-    { to: "/patient/book-appointment", icon: "📅", title: "Book Appointment", desc: "Schedule a visit with your doctor", color: "#2b6c9e" },
-    { to: "/patient/profile", icon: "👤", title: "My Profile", desc: "Update your personal information", color: "#4a8fc1" },
-    { to: "/patient/history", icon: "📖", title: "Medical History", desc: "View your past appointments", color: "#00a8cc" },
-    { to: "/patient/reports", icon: "📋", title: "Reports", desc: "Access your medical reports", color: "#47b5ff" },
+    { to: "/patient/book-appointment", icon: <IconCalendar />,    title: "Book appointment", desc: "Schedule a visit with your doctor" },
+    { to: "/patient/profile",          icon: <IconUser />,        title: "My profile",       desc: "Update your personal information" },
+    { to: "/patient/history",          icon: <IconHistory />,     title: "Medical history",  desc: "View your past appointments" },
+    { to: "/patient/reports",          icon: <IconFileText />,    title: "Reports",          desc: "Access your medical reports" },
+  ];
+
+  const statCards = [
+    { label: "Total appointments", value: stats.totalAppointments,     icon: <IconCalendar /> },
+    { label: "Completed",          value: stats.completedAppointments, icon: <IconCheckCircle /> },
+    { label: "Pending",            value: stats.pendingAppointments,   icon: <IconClock /> },
   ];
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('en-US', {
       weekday: 'short',
-      month: 'short', 
-      day: 'numeric' 
+      month: 'short',
+      day: 'numeric'
     });
   };
 
-  const formatTime = (timeStr) => {
-    return timeStr.substring(0, 5);
+  const formatTime = (timeStr) => timeStr.substring(0, 5);
+
+  const statusStyles = {
+    pending:   { bg: 'var(--mp-warning-bg)', color: 'var(--mp-warning)', border: 'var(--mp-warning-bd)' },
+    approved:  { bg: 'var(--mp-success-bg)', color: 'var(--mp-success)', border: 'var(--mp-success-bd)' },
+    completed: { bg: 'var(--mp-success-bg)', color: 'var(--mp-success)', border: 'var(--mp-success-bd)' },
+    canceled:  { bg: 'var(--mp-danger-bg)',  color: 'var(--mp-danger)',  border: 'var(--mp-danger-bd)' },
+  };
+
+  const StatusPill = ({ status }) => {
+    const s = statusStyles[status] || statusStyles.pending;
+    return (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '3px 10px',
+          fontSize: 12,
+          fontWeight: 500,
+          textTransform: 'capitalize',
+          letterSpacing: '-0.005em',
+          borderRadius: 999,
+          background: s.bg,
+          color: s.color,
+          border: `1px solid ${s.border}`,
+        }}
+      >
+        {status}
+      </span>
+    );
   };
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <div className="spinner-border text-success" role="status"></div>
+      <div className="d-flex justify-content-center py-5">
+        <div style={{ color: 'var(--mp-primary)' }}>
+          <IconSpinner />
+        </div>
+        <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="container-fluid px-4">
-      <div className="medical-header mb-4">
-        <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="mb-2">Welcome back, {user?.name}! 👋</h2>
-            <p className="mb-0">Here's your health overview</p>
-          </div>
-          <button className="medical-btn-outline" onClick={handleLogout}>Logout</button>
+    <div className="container-fluid px-4 py-4">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+          <p className="mp-overline mb-1">Patient workspace</p>
+          <h1 className="mp-h2 mb-1">Welcome back, {user?.name}</h1>
+          <p className="mp-body" style={{ marginBottom: 0 }}>
+            Here is your health overview.
+          </p>
         </div>
+        <button className="medical-btn-outline" onClick={handleLogout}>
+          <IconLogout />
+          Sign out
+        </button>
       </div>
 
-      <div className="row g-4 mb-5">
-        <div className="col-md-4">
-          <div className="stat-card">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div className="stat-label">Total Appointments</div>
-                <div className="stat-value">{stats.totalAppointments}</div>
+      {/* Stats */}
+      <div className="row g-3 mb-4">
+        {statCards.map((s, i) => (
+          <div className="col-md-4" key={i}>
+            <div className="medical-card" style={{ padding: 22 }}>
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <p className="mp-overline" style={{ marginBottom: 8, fontSize: 10.5 }}>
+                    {s.label}
+                  </p>
+                  <div
+                    style={{
+                      fontSize: 28,
+                      fontWeight: 700,
+                      letterSpacing: '-0.03em',
+                      color: 'var(--mp-text)',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {s.value}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: 'var(--mp-primary-light)',
+                    color: 'var(--mp-primary)',
+                    border: '1px solid var(--mp-primary-border)',
+                    flexShrink: 0,
+                  }}
+                >
+                  {s.icon}
+                </div>
               </div>
-              <div className="display-6" style={{ color: '#2b6c9e' }}>📊</div>
             </div>
           </div>
-        </div>
-        <div className="col-md-4">
-          <div className="stat-card">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div className="stat-label">Completed</div>
-                <div className="stat-value">{stats.completedAppointments}</div>
-              </div>
-              <div className="display-6" style={{ color: '#28a745' }}>✅</div>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="stat-card">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div className="stat-label">Pending</div>
-                <div className="stat-value">{stats.pendingAppointments}</div>
-              </div>
-              <div className="display-6" style={{ color: '#ffc107' }}>⏳</div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
+      {/* Upcoming */}
       {upcomingAppointments.length > 0 ? (
-        <div className="mb-5">
-          <h4 className="medical-label mb-3">📅 Upcoming Appointments</h4>
-          <div className="row g-4">
+        <div className="mb-4">
+          <div className="mb-3">
+            <p className="mp-overline mb-2">Upcoming</p>
+            <h2 className="mp-h3">Next appointments</h2>
+          </div>
+
+          <div className="row g-3">
             {upcomingAppointments.map((apt) => (
               <div key={apt.id} className="col-md-4">
-                <div className="medical-card">
-                  <div className="d-flex align-items-center mb-3">
-                    <div style={{
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: '50%',
-                      background: '#e3f2fd',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.5rem',
-                      marginRight: '1rem',
-                      color: '#2b6c9e'
-                    }}>
-                      👨‍⚕️
+                <div className="medical-card" style={{ padding: 22 }}>
+                  <div className="d-flex align-items-center gap-3 mb-3">
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        background: 'var(--mp-primary-light)',
+                        color: 'var(--mp-primary)',
+                        border: '1px solid var(--mp-primary-border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <IconUser />
                     </div>
-                    <div>
-                      <h6 className="mb-0">Dr. {apt.doctors?.name || 'Doctor'}</h6>
-                      <small className="text-muted">
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: 14.5,
+                          fontWeight: 600,
+                          color: 'var(--mp-text)',
+                          letterSpacing: '-0.005em',
+                          marginBottom: 2,
+                        }}
+                      >
+                        Dr. {apt.doctors?.name || 'Doctor'}
+                      </div>
+                      <div style={{ fontSize: 12.5, color: 'var(--mp-text-muted)' }}>
                         {formatDate(apt.date)} at {formatTime(apt.time)}
-                      </small>
+                      </div>
                     </div>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className={`badge px-3 py-2 ${
-                      apt.status === 'approved' ? 'bg-success' : 
-                      apt.status === 'pending' ? 'bg-warning text-dark' : 
-                      'bg-secondary'
-                    }`}>
-                      {apt.status}
-                    </span>
-                  </div>
+                  <StatusPill status={apt.status} />
                 </div>
               </div>
             ))}
           </div>
         </div>
       ) : (
-        <div className="alert alert-info mb-5">
-          <i className="bi bi-info-circle me-2"></i>
-          No upcoming appointments. <Link to="/patient/book-appointment">Book one now!</Link>
+        <div className="medical-alert medical-alert-info mb-4">
+          <span className="medical-alert__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+            </svg>
+          </span>
+          <div>
+            No upcoming appointments.{' '}
+            <Link to="/patient/book-appointment" style={{ fontWeight: 500 }}>
+              Book one now
+            </Link>
+            .
+          </div>
         </div>
       )}
 
-      <h4 className="medical-label mb-3">🚀 Quick Actions</h4>
-      <div className="row g-4">
-        {quickActions.map((action, index) => (
-          <div key={index} className="col-md-6 col-lg-3">
-            <Link to={action.to} className="text-decoration-none">
-              <div className="medical-card h-100">
-                <div className="text-center">
-                  <div style={{ fontSize: '3rem', marginBottom: '1rem', color: action.color }}>
-                    {action.icon}
+      {/* Quick actions */}
+      <div className="mb-3">
+        <p className="mp-overline mb-2">Quick actions</p>
+        <h2 className="mp-h3">What would you like to do?</h2>
+      </div>
+
+      <div className="row g-3">
+        {quickActions.map((action, i) => (
+          <div key={i} className="col-md-6 col-lg-3">
+            <Link to={action.to} className="text-decoration-none" style={{ color: 'inherit' }}>
+              <div
+                className="medical-card h-100"
+                style={{
+                  padding: 22,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: 'var(--mp-primary-light)',
+                    color: 'var(--mp-primary)',
+                    border: '1px solid var(--mp-primary-border)',
+                  }}
+                >
+                  {action.icon}
+                </div>
+                <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 8,
+                      marginBottom: 4,
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontSize: 14.5,
+                        fontWeight: 600,
+                        letterSpacing: '-0.01em',
+                        color: 'var(--mp-text)',
+                        marginBottom: 0,
+                      }}
+                    >
+                      {action.title}
+                    </h3>
+                    <span style={{ color: 'var(--mp-text-faint)' }}>
+                      <IconArrowRight />
+                    </span>
                   </div>
-                  <h5 className="fw-bold mb-2" style={{ color: action.color }}>
-                    {action.title}
-                  </h5>
-                  <p className="text-muted small mb-0">{action.desc}</p>
+                  <p className="mp-caption" style={{ marginBottom: 0, fontSize: 12.5 }}>
+                    {action.desc}
+                  </p>
                 </div>
               </div>
             </Link>
           </div>
         ))}
       </div>
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

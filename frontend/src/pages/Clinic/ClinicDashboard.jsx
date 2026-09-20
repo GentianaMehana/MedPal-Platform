@@ -1,8 +1,94 @@
-// frontend/src/pages/Clinic/ClinicDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/medical-theme.css";
+
+/* ---------- Icons ---------- */
+const IconUsers = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+const IconStethoscope = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M4 3v6a4 4 0 0 0 8 0V3"/><path d="M2 3h4M10 3h4"/>
+    <path d="M12 13v3a5 5 0 0 0 10 0v-2"/><circle cx="22" cy="11" r="2"/>
+  </svg>
+);
+const IconCalendar = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M3 10h18M8 3v4M16 3v4"/>
+  </svg>
+);
+const IconCalendarPlus = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M3 10h18M8 3v4M16 3v4M12 14v4M10 16h4"/>
+  </svg>
+);
+const IconUserPlus = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>
+  </svg>
+);
+const IconBuilding = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M15 21V9h3a2 2 0 0 1 2 2v10"/>
+    <path d="M9 7h2M9 11h2M9 15h2"/>
+  </svg>
+);
+const IconClock = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  </svg>
+);
+const IconFileText = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <path d="M14 2v6h6M9 13h6M9 17h6"/>
+  </svg>
+);
+const IconMailPlus = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2"/>
+    <path d="M3 7l9 6 9-6"/><path d="M19 14h4M21 12v4" transform="translate(-3,0)"/>
+  </svg>
+);
+const IconSettings = (p) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+);
+const IconLogout = (p) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <path d="M16 17l5-5-5-5M21 12H9"/>
+  </svg>
+);
+const IconSpinner = ({ size = 24, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
+    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.2" strokeWidth="2.5"/>
+    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
 
 export default function ClinicDashboard() {
   const [user, setUser] = useState(null);
@@ -23,7 +109,6 @@ export default function ClinicDashboard() {
       }
       setUser(clinicUser);
 
-      // Get clinic_id from clinics table
       const { data: clinicData } = await supabase
         .from('clinics')
         .select('id')
@@ -37,19 +122,16 @@ export default function ClinicDashboard() {
         return;
       }
 
-      // Get doctors count
       const { count: doctorsCount } = await supabase
         .from('doctors')
         .select('*', { count: 'exact', head: true })
         .eq('clinic_id', clinicId);
 
-      // Get patients count (patients registered by this clinic)
       const { count: patientsCount } = await supabase
         .from('patients')
         .select('*', { count: 'exact', head: true })
         .eq('registered_by_clinic_id', clinicUser.id);
 
-      // Get appointments count
       const { data: doctors } = await supabase
         .from('doctors')
         .select('id')
@@ -84,92 +166,155 @@ export default function ClinicDashboard() {
     navigate("/login");
   };
 
-  const cards = [
-    { to: "/clinic/doctors", icon: "👨‍⚕️", title: "Doctors List", desc: "View all clinic doctors" },
-    { to: "/clinic/add-doctor", icon: "➕", title: "Add Doctor", desc: "Register a new doctor" },
-    { to: "/clinic/calendar", icon: "📅", title: "Calendar", desc: "View clinic appointments" },
-    { to: "/clinic/appointments", icon: "📆", title: "Appointments", desc: "Manage all appointments" },
-    { to: "/clinic/services", icon: "🏥", title: "Services", desc: "Manage departments & services" },
-    { to: "/clinic/set-working-hours", icon: "🕒", title: "Working Hours", desc: "Set doctor schedules" },
-    { to: "/clinic/reports", icon: "📑", title: "Reports", desc: "View patient reports" },
-    { to: "/clinic/invite-patient", icon: "📧", title: "Invite Patient", desc: "Send invitation to patient" },
-    { to: "/clinic/profile", icon: "⚙️", title: "Profile", desc: "Update clinic information" },
+  const quickActions = [
+    { to: "/clinic/doctors",           icon: <IconStethoscope />,  title: "Doctors",          desc: "View all clinic doctors" },
+    { to: "/clinic/add-doctor",        icon: <IconUserPlus />,     title: "Add doctor",       desc: "Invite a new doctor" },
+    { to: "/clinic/calendar",          icon: <IconCalendar />,     title: "Calendar",         desc: "Appointments by date" },
+    { to: "/clinic/appointments",      icon: <IconCalendarPlus />, title: "Appointments",     desc: "Manage all appointments" },
+    { to: "/clinic/services",          icon: <IconBuilding />,     title: "Services",         desc: "Departments and services" },
+    { to: "/clinic/set-working-hours", icon: <IconClock />,        title: "Working hours",    desc: "Set doctor schedules" },
+    { to: "/clinic/reports",           icon: <IconFileText />,     title: "Reports",          desc: "Patient medical reports" },
+    { to: "/clinic/invite-patient",    icon: <IconMailPlus />,     title: "Invite patient",   desc: "Send a patient invitation" },
+    { to: "/clinic/profile",           icon: <IconSettings />,     title: "Profile",          desc: "Update clinic information" },
+  ];
+
+  const statCards = [
+    { label: 'Doctors',      value: stats.doctors,      icon: <IconStethoscope /> },
+    { label: 'Patients',     value: stats.patients,     icon: <IconUsers /> },
+    { label: 'Appointments', value: stats.appointments, icon: <IconCalendar /> },
   ];
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <div className="spinner-border text-success" role="status"></div>
+      <div className="d-flex justify-content-center py-5">
+        <div style={{ color: 'var(--mp-primary)' }}>
+          <IconSpinner size={28} />
+        </div>
+        <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="container-fluid px-4">
-      <div className="medical-header mb-4">
-        <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="mb-2">Welcome, {user?.name} Clinic! 🏥</h2>
-            <p className="mb-0">Manage your clinic operations</p>
-          </div>
-          <button className="medical-btn-outline" onClick={handleLogout}>Logout</button>
+    <div className="container-fluid px-4 py-4">
+      {/* Page header */}
+      <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+          <p className="mp-overline mb-1">Clinic workspace</p>
+          <h1 className="mp-h2 mb-1">{user?.name || 'Clinic'}</h1>
+          <p className="mp-body" style={{ marginBottom: 0 }}>
+            Manage doctors, appointments, and services.
+          </p>
         </div>
+        <button className="medical-btn-outline" onClick={handleLogout}>
+          <IconLogout />
+          Sign out
+        </button>
       </div>
 
-      <div className="row g-4 mb-5">
-        <div className="col-md-4">
-          <div className="stat-card">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div className="stat-label">Doctors</div>
-                <div className="stat-value">{stats.doctors}</div>
-              </div>
-              <div className="display-6" style={{ color: '#2b6c9e' }}>👨‍⚕️</div>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="stat-card">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div className="stat-label">Patients</div>
-                <div className="stat-value">{stats.patients}</div>
-              </div>
-              <div className="display-6" style={{ color: '#4a8fc1' }}>🧑‍🤝‍🧑</div>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="stat-card">
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div className="stat-label">Appointments</div>
-                <div className="stat-value">{stats.appointments}</div>
-              </div>
-              <div className="display-6" style={{ color: '#00a8cc' }}>📅</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <h4 className="medical-label mb-3">🚀 Quick Actions</h4>
-      <div className="row g-4">
-        {cards.map((card, index) => (
-          <div key={index} className="col-md-6 col-lg-4">
-            <Link to={card.to} className="text-decoration-none">
-              <div className="medical-card h-100">
-                <div className="text-center">
-                  <div style={{ fontSize: '3rem', marginBottom: '1rem', color: '#2b6c9e' }}>
-                    {card.icon}
+      {/* Stat cards */}
+      <div className="row g-3 mb-4">
+        {statCards.map((s, i) => (
+          <div className="col-md-4" key={i}>
+            <div className="medical-card" style={{ padding: 24 }}>
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <p className="mp-overline" style={{ marginBottom: 8 }}>{s.label}</p>
+                  <div
+                    style={{
+                      fontSize: 32,
+                      fontWeight: 700,
+                      letterSpacing: '-0.03em',
+                      color: 'var(--mp-text)',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {s.value}
                   </div>
-                  <h5 className="fw-bold mb-2" style={{ color: '#2b6c9e' }}>{card.title}</h5>
-                  <p className="text-muted small mb-0">{card.desc}</p>
+                </div>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 44,
+                    height: 44,
+                    borderRadius: 10,
+                    background: 'var(--mp-primary-light)',
+                    color: 'var(--mp-primary)',
+                    border: '1px solid var(--mp-primary-border)',
+                    flexShrink: 0,
+                  }}
+                >
+                  {s.icon}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick actions */}
+      <div className="mb-3">
+        <p className="mp-overline mb-2">Quick actions</p>
+        <h2 className="mp-h3">Common tasks</h2>
+      </div>
+
+      <div className="row g-3">
+        {quickActions.map((card, index) => (
+          <div key={index} className="col-md-6 col-lg-4">
+            <Link to={card.to} className="text-decoration-none" style={{ color: 'inherit' }}>
+              <div
+                className="medical-card h-100"
+                style={{
+                  padding: 22,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 16,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: 'var(--mp-primary-light)',
+                    color: 'var(--mp-primary)',
+                    border: '1px solid var(--mp-primary-border)',
+                    flexShrink: 0,
+                  }}
+                >
+                  {card.icon}
+                </div>
+                <div className="flex-grow-1">
+                  <h3
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      letterSpacing: '-0.01em',
+                      color: 'var(--mp-text)',
+                      marginBottom: 4,
+                    }}
+                  >
+                    {card.title}
+                  </h3>
+                  <p
+                    className="mp-caption"
+                    style={{ marginBottom: 0, fontSize: 13 }}
+                  >
+                    {card.desc}
+                  </p>
                 </div>
               </div>
             </Link>
           </div>
         ))}
       </div>
+
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
