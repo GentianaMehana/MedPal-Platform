@@ -1,0 +1,550 @@
+/* ============================================================
+   MedPal Design System — v2
+   Enterprise Healthcare SaaS
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---- Surface & Background ---- */
+  --mp-bg:            #FFFFFF;
+  --mp-bg-subtle:     #FAFBFC;
+  --mp-bg-muted:      #F4F6F8;
+  --mp-bg-inset:      #EEF1F5;
+  --mp-bg-inverse:    #0A0F1A;
+
+  /* ---- Text ---- */
+  --mp-text:            #0A0F1A;
+  --mp-text-secondary:  #46566B;
+  --mp-text-muted:      #6B7A8F;
+  --mp-text-faint:      #9BA8B8;
+  --mp-text-inverse:    #FFFFFF;
+
+  /* ---- Border ---- */
+  --mp-border:          #E4E8EE;
+  --mp-border-strong:   #D2D8E0;
+  --mp-border-focus:    #1F6FEB;
+
+  /* ---- Primary (medical blue) ---- */
+  --mp-primary:         #0B4F87;
+  --mp-primary-hover:   #093F6C;
+  --mp-primary-active:  #072F51;
+  --mp-primary-light:   #EAF2FA;
+  --mp-primary-lighter: #F4F8FC;
+  --mp-primary-border:  #C5DBEE;
+
+  /* ---- Accent (subtle teal for positive/medical) ---- */
+  --mp-accent:          #0E7C66;
+  --mp-accent-light:    #E6F4F1;
+
+  /* ---- Status ---- */
+  --mp-success:      #0E7C66;
+  --mp-success-bg:   #E6F4F1;
+  --mp-success-bd:   #B8DFD5;
+
+  --mp-danger:       #B42318;
+  --mp-danger-bg:    #FDECEA;
+  --mp-danger-bd:    #F3C7C2;
+
+  --mp-warning:      #B54708;
+  --mp-warning-bg:   #FEF6E7;
+  --mp-warning-bd:   #F2D9A8;
+
+  --mp-info:         #0B4F87;
+  --mp-info-bg:      #EAF2FA;
+  --mp-info-bd:      #C5DBEE;
+
+  /* ---- Shape ---- */
+  --mp-radius-xs: 4px;
+  --mp-radius-sm: 6px;
+  --mp-radius:    8px;
+  --mp-radius-md: 10px;
+  --mp-radius-lg: 14px;
+  --mp-radius-xl: 20px;
+
+  /* ---- Shadows (multi-layer for realism) ---- */
+  --mp-shadow-xs:
+    0 1px 2px rgba(10, 15, 26, 0.04);
+  --mp-shadow-sm:
+    0 1px 2px rgba(10, 15, 26, 0.04),
+    0 1px 3px rgba(10, 15, 26, 0.06);
+  --mp-shadow:
+    0 1px 2px rgba(10, 15, 26, 0.04),
+    0 4px 12px rgba(10, 15, 26, 0.06);
+  --mp-shadow-md:
+    0 2px 4px rgba(10, 15, 26, 0.04),
+    0 8px 24px rgba(10, 15, 26, 0.08);
+  --mp-shadow-lg:
+    0 4px 8px rgba(10, 15, 26, 0.04),
+    0 16px 48px rgba(10, 15, 26, 0.12);
+  --mp-ring-focus:
+    0 0 0 3px rgba(31, 111, 235, 0.15);
+  --mp-ring-primary:
+    0 0 0 3px rgba(11, 79, 135, 0.14);
+
+  /* ---- Type ---- */
+  --mp-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mp-font-mono: ui-monospace, 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  /* ---- Motion ---- */
+  --mp-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --mp-dur-fast: 120ms;
+  --mp-dur: 180ms;
+  --mp-dur-slow: 320ms;
+}
+
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--mp-font);
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mp-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+p { margin: 0; }
+
+a {
+  color: var(--mp-primary);
+  text-decoration: none;
+  transition: color var(--mp-dur-fast) var(--mp-ease);
+}
+a:hover { color: var(--mp-primary-hover); }
+
+::selection {
+  background: var(--mp-primary-light);
+  color: var(--mp-primary-active);
+}
+
+/* ============================================================
+   Typography Scale
+   ============================================================ */
+.mp-display {
+  font-size: clamp(36px, 5.5vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--mp-text);
+}
+.mp-h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.mp-h2 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.mp-h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+.mp-lead {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--mp-text-secondary);
+  letter-spacing: -0.005em;
+}
+.mp-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--mp-text-secondary);
+}
+.mp-caption {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mp-text-muted);
+}
+.mp-overline {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mp-text-muted);
+}
+
+/* ============================================================
+   Container
+   ============================================================ */
+.mp-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.mp-container--narrow { max-width: 960px; }
+.mp-container--wide   { max-width: 1320px; }
+
+/* ============================================================
+   Cards
+   ============================================================ */
+.medical-card {
+  background: var(--mp-bg);
+  border: 1px solid var(--mp-border);
+  border-radius: var(--mp-radius-lg);
+  padding: 28px;
+  box-shadow: var(--mp-shadow-xs);
+  transition:
+    box-shadow var(--mp-dur) var(--mp-ease),
+    border-color var(--mp-dur) var(--mp-ease),
+    transform var(--mp-dur) var(--mp-ease);
+}
+
+.medical-card:hover {
+  box-shadow: var(--mp-shadow);
+  border-color: var(--mp-border-strong);
+}
+
+.medical-card--flat {
+  box-shadow: none;
+}
+.medical-card--flat:hover {
+  box-shadow: none;
+}
+
+.medical-card--inset {
+  background: var(--mp-bg-subtle);
+  box-shadow: none;
+}
+
+/* ============================================================
+   Labels & Inputs
+   ============================================================ */
+.medical-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--mp-text);
+  margin-bottom: 6px;
+}
+
+.medical-label .required {
+  color: var(--mp-danger);
+  margin-left: 2px;
+}
+
+.medical-hint {
+  display: block;
+  font-size: 12.5px;
+  color: var(--mp-text-muted);
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.medical-input {
+  display: block;
+  width: 100%;
+  padding: 10px 13px;
+  font-size: 14.5px;
+  font-family: var(--mp-font);
+  font-weight: 400;
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  border: 1px solid var(--mp-border-strong);
+  border-radius: var(--mp-radius);
+  transition:
+    border-color var(--mp-dur-fast) var(--mp-ease),
+    box-shadow var(--mp-dur-fast) var(--mp-ease),
+    background var(--mp-dur-fast) var(--mp-ease);
+  outline: none;
+  line-height: 1.4;
+}
+
+.medical-input::placeholder {
+  color: var(--mp-text-faint);
+}
+
+.medical-input:hover:not(:disabled):not(:focus) {
+  border-color: #B8C2CE;
+}
+
+.medical-input:focus {
+  border-color: var(--mp-primary);
+  box-shadow: var(--mp-ring-primary);
+  background: var(--mp-bg);
+}
+
+.medical-input:disabled {
+  background: var(--mp-bg-inset);
+  color: var(--mp-text-muted);
+  cursor: not-allowed;
+  border-color: var(--mp-border);
+}
+
+.medical-input--error {
+  border-color: var(--mp-danger);
+}
+.medical-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.14);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.medical-btn-primary,
+.medical-btn-outline,
+.medical-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 14.5px;
+  font-weight: 500;
+  font-family: var(--mp-font);
+  letter-spacing: -0.005em;
+  border-radius: var(--mp-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--mp-dur-fast) var(--mp-ease),
+    border-color var(--mp-dur-fast) var(--mp-ease),
+    color var(--mp-dur-fast) var(--mp-ease),
+    box-shadow var(--mp-dur-fast) var(--mp-ease),
+    transform var(--mp-dur-fast) var(--mp-ease);
+  line-height: 1.3;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.medical-btn-primary {
+  color: #FFFFFF;
+  background: var(--mp-primary);
+  border: 1px solid var(--mp-primary);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(10, 15, 26, 0.08);
+}
+
+.medical-btn-primary:hover:not(:disabled) {
+  background: var(--mp-primary-hover);
+  border-color: var(--mp-primary-hover);
+  color: #FFFFFF;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 4px rgba(10, 15, 26, 0.12);
+}
+
+.medical-btn-primary:active:not(:disabled) {
+  background: var(--mp-primary-active);
+  border-color: var(--mp-primary-active);
+  transform: translateY(0.5px);
+}
+
+.medical-btn-primary:focus-visible {
+  outline: none;
+  box-shadow: var(--mp-ring-primary), 0 1px 2px rgba(10, 15, 26, 0.08);
+}
+
+.medical-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.medical-btn-outline {
+  color: var(--mp-text);
+  background: var(--mp-bg);
+  border: 1px solid var(--mp-border-strong);
+  box-shadow: 0 1px 2px rgba(10, 15, 26, 0.03);
+}
+
+.medical-btn-outline:hover:not(:disabled) {
+  border-color: var(--mp-primary);
+  color: var(--mp-primary);
+  background: var(--mp-primary-lighter);
+}
+
+.medical-btn-outline:focus-visible {
+  outline: none;
+  box-shadow: var(--mp-ring-primary);
+}
+
+.medical-btn-ghost {
+  color: var(--mp-text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+.medical-btn-ghost:hover:not(:disabled) {
+  background: var(--mp-bg-muted);
+  color: var(--mp-text);
+}
+
+.medical-btn--lg { padding: 12px 22px; font-size: 15px; }
+.medical-btn--sm { padding: 7px 12px; font-size: 13px; }
+
+/* ============================================================
+   Alerts
+   ============================================================ */
+.medical-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  border-radius: var(--mp-radius);
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.medical-alert__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: inline-flex;
+}
+
+.medical-alert-info {
+  background: var(--mp-info-bg);
+  border-color: var(--mp-info-bd);
+  color: var(--mp-primary-active);
+}
+.medical-alert-success {
+  background: var(--mp-success-bg);
+  border-color: var(--mp-success-bd);
+  color: #0A5E4E;
+}
+.medical-alert-danger {
+  background: var(--mp-danger-bg);
+  border-color: var(--mp-danger-bd);
+  color: #8A1A12;
+}
+.medical-alert-warning {
+  background: var(--mp-warning-bg);
+  border-color: var(--mp-warning-bd);
+  color: #7A2F03;
+}
+
+/* ============================================================
+   Badges & Chips
+   ============================================================ */
+.mp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: 999px;
+  background: var(--mp-primary-light);
+  color: var(--mp-primary-active);
+  border: 1px solid var(--mp-primary-border);
+  line-height: 1.4;
+}
+
+.mp-badge--neutral {
+  background: var(--mp-bg-muted);
+  color: var(--mp-text-secondary);
+  border-color: var(--mp-border);
+}
+
+.mp-badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* ============================================================
+   Dividers
+   ============================================================ */
+.mp-divider {
+  height: 1px;
+  background: var(--mp-border);
+  border: 0;
+  margin: 24px 0;
+}
+
+.mp-divider--labeled {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mp-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 24px 0;
+}
+.mp-divider--labeled::before,
+.mp-divider--labeled::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--mp-border);
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.medical-footer {
+  padding: 32px 0;
+  background: var(--mp-bg);
+  border-top: 1px solid var(--mp-border);
+  color: var(--mp-text-muted);
+  font-size: 13px;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes mp-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mp-fade-in-only {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes mp-scale-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.mp-fade-in { animation: mp-fade-in var(--mp-dur-slow) var(--mp-ease) both; }
+.mp-scale-in { animation: mp-scale-in var(--mp-dur-slow) var(--mp-ease) both; }
+
+/* ============================================================
+   Grid Pattern (for hero backgrounds)
+   ============================================================ */
+.mp-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(10, 15, 26, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 15, 26, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.mp-radial-fade {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(11, 79, 135, 0.06), transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 100%, rgba(14, 124, 102, 0.04), transparent 60%);
+}
