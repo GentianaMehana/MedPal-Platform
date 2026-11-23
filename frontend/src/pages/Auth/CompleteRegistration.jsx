@@ -1,34 +1,84 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
-import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs";
 import "../../styles/medical-theme.css";
 
 /* ---------- Icons ---------- */
 const IconArrowLeft = (p) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...p}
+  >
+    <path d="M19 12H5M12 19l-7-7 7-7" />
   </svg>
 );
+
 const IconAlert = (p) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
-    <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...p}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 8v4M12 16h.01" />
   </svg>
 );
+
 const IconCheck = (p) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...p}
+  >
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <path d="M22 4L12 14.01l-3-3" />
   </svg>
 );
-const IconSpinner = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-    style={{ animation: 'mp-spin 0.9s linear infinite' }}>
-    <circle cx="12" cy="12" r="9" stroke={color} strokeOpacity="0.15" strokeWidth="2.5"/>
-    <path d="M21 12a9 9 0 0 0-9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+
+const IconSpinner = ({ size = 20, color = "currentColor" }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    style={{ animation: "mp-spin 0.9s linear infinite" }}
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="9"
+      stroke={color}
+      strokeOpacity="0.15"
+      strokeWidth="2.5"
+    />
+    <path
+      d="M21 12a9 9 0 0 0-9-9"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
@@ -36,21 +86,24 @@ export default function CompleteRegistration() {
   const { role } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [invitation, setInvitation] = useState(null);
   const [verifying, setVerifying] = useState(true);
   const [doctorCode, setDoctorCode] = useState("");
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     phone: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const token = searchParams.get("token");
+
     console.log("🔍 Token from URL:", token);
     console.log("🔍 Role from URL:", role);
 
@@ -65,10 +118,10 @@ export default function CompleteRegistration() {
         console.log("🔍 Verifying invitation with token:", token);
 
         const { data, error } = await supabase
-          .from('invitations')
-          .select('*')
-          .eq('token', token)
-          .eq('status', 'pending')
+          .from("invitations")
+          .select("*")
+          .eq("token", token)
+          .eq("status", "pending")
           .maybeSingle();
 
         console.log("📦 Invitation data:", data);
@@ -110,23 +163,22 @@ export default function CompleteRegistration() {
         setInvitation(data);
         setVerifying(false);
 
-        if (role === 'doctor' && data.metadata?.name) {
-          const nameParts = data.metadata.name.split(' ');
-          const firstName = nameParts[0] || '';
-          const lastName = nameParts.slice(1).join(' ') || '';
+        if (role === "doctor" && data.metadata?.name) {
+          const nameParts = data.metadata.name.split(" ");
+          const firstName = nameParts[0] || "";
+          const lastName = nameParts.slice(1).join(" ") || "";
 
-          setFormData(prev => ({
+          setFormData((prev) => ({
             ...prev,
             first_name: firstName,
             last_name: lastName,
-            phone: data.metadata.phone || ''
+            phone: data.metadata.phone || "",
           }));
 
           if (data.metadata.doctor_code) {
             setDoctorCode(data.metadata.doctor_code);
           }
         }
-
       } catch (err) {
         console.error("💥 Verification error:", err);
         setError("Error verifying invitation");
@@ -138,7 +190,10 @@ export default function CompleteRegistration() {
   }, [role, searchParams]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -152,8 +207,13 @@ export default function CompleteRegistration() {
         throw new Error("No invitation found");
       }
 
-      if (formData.password.length < 6) throw new Error("Password too short");
-      if (formData.password !== formData.confirmPassword) throw new Error("Passwords don't match");
+      if (formData.password.length < 6) {
+        throw new Error("Password too short");
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error("Passwords don't match");
+      }
 
       const fullName = `${formData.first_name} ${formData.last_name}`;
       const userId = uuidv4();
@@ -162,51 +222,61 @@ export default function CompleteRegistration() {
       console.log("📝 Invitation data:", invitation);
 
       const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(formData.password, saltRounds);
+      const hashedPassword = await bcrypt.hash(
+        formData.password,
+        saltRounds
+      );
 
       // 1. Insert into users table
       const { error: userError } = await supabase
-        .from('users')
-        .insert([{
-          id: userId,
-          email: invitation.email,
-          name: fullName,
-          role: role,
-          is_verified: true,
-          phone: formData.phone || null,
-          password: hashedPassword,
-          created_at: new Date().toISOString()
-        }]);
+        .from("users")
+        .insert([
+          {
+            id: userId,
+            email: invitation.email,
+            name: fullName,
+            role: role,
+            is_verified: true,
+            phone: formData.phone || null,
+            password: hashedPassword,
+            created_at: new Date().toISOString(),
+          },
+        ]);
 
       if (userError) {
         console.error("❌ Users insert error:", userError);
         throw userError;
       }
+
       console.log("✅ User inserted successfully");
 
       // 2. Insert into role-specific table
-      if (role === 'patient') {
+      if (role === "patient") {
         const { error: patientError } = await supabase
-          .from('patients')
-          .insert([{
-            user_id: userId,
-            name: fullName,
-            email: invitation.email,
-            phone: formData.phone || null
-          }]);
+          .from("patients")
+          .insert([
+            {
+              user_id: userId,
+              name: fullName,
+              email: invitation.email,
+              phone: formData.phone || null,
+            },
+          ]);
 
         if (patientError) {
           console.error("❌ Patients insert error:", patientError);
         } else {
           console.log("✅ Patient inserted successfully with email");
         }
-      }
-
-      else if (role === 'doctor') {
+      } else if (role === "doctor") {
         const metadata = invitation.metadata || {};
+
         console.log("📦 Doctor metadata:", metadata);
 
-        const finalDoctorCode = doctorCode || metadata.doctor_code || `DR-${userId.slice(0, 8).toUpperCase()}`;
+        const finalDoctorCode =
+          doctorCode ||
+          metadata.doctor_code ||
+          `DR-${userId.slice(0, 8).toUpperCase()}`;
 
         const doctorData = {
           user_id: userId,
@@ -214,12 +284,13 @@ export default function CompleteRegistration() {
           doctor_code: finalDoctorCode,
           clinic_id: invitation.clinic_id,
           department_id: metadata.departmentId || null,
-          specialization: metadata.specialization || 'General Practitioner',
+          specialization:
+            metadata.specialization || "General Practitioner",
           consultation_fee: metadata.consultationFee || 50,
           phone: formData.phone || metadata.phone || null,
           email: invitation.email,
           is_available: true,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         };
 
         if (metadata.education && metadata.education.length > 0) {
@@ -241,25 +312,26 @@ export default function CompleteRegistration() {
         console.log("📝 Inserting doctor with data:", doctorData);
 
         const { error: doctorError } = await supabase
-          .from('doctors')
+          .from("doctors")
           .insert([doctorData]);
 
         if (doctorError) {
           console.error("❌ Doctors insert error:", doctorError);
           throw doctorError;
         }
+
         console.log("✅ Doctor inserted successfully");
       }
 
       // 3. Update invitation status
       const { error: updateError } = await supabase
-        .from('invitations')
+        .from("invitations")
         .update({
-          status: 'accepted',
+          status: "accepted",
           accepted_at: new Date().toISOString(),
-          user_id: userId
+          user_id: userId,
         })
-        .eq('id', invitation.id);
+        .eq("id", invitation.id);
 
       if (updateError) {
         console.error("❌ Invitation update error:", updateError);
@@ -267,15 +339,13 @@ export default function CompleteRegistration() {
         console.log("✅ Invitation updated successfully");
       }
 
-      console.log("🎉 Registration complete, redirecting to login");
-      navigate('/login', {
-        state: {
-          message: 'Registration successful! You can now login with your credentials.'
-        }
-      });
+      console.log("🎉 Registration complete, redirecting to Netlify");
 
+      // 4. Redirect to production Netlify login
+      window.location.href =
+        "https://medpalplatform.netlify.app/login";
     } catch (err) {
-      console.error('💥 Registration error:', err);
+      console.error("💥 Registration error:", err);
       setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
@@ -285,12 +355,20 @@ export default function CompleteRegistration() {
   /* ============ LOADING STATE ============ */
   if (verifying) {
     return (
-      <div className="min-vh-100 d-flex align-items-center justify-content-center"
-        style={{ background: 'var(--mp-bg-subtle)' }}>
+      <div
+        className="min-vh-100 d-flex align-items-center justify-content-center"
+        style={{ background: "var(--mp-bg-subtle)" }}
+      >
         <div className="text-center mp-fade-in">
-          <div style={{ color: 'var(--mp-primary)', marginBottom: 16 }}>
+          <div
+            style={{
+              color: "var(--mp-primary)",
+              marginBottom: 16,
+            }}
+          >
             <IconSpinner size={32} />
           </div>
+
           <p className="mp-body" style={{ marginBottom: 0 }}>
             Verifying your invitation…
           </p>
@@ -302,27 +380,44 @@ export default function CompleteRegistration() {
   /* ============ ERROR STATE ============ */
   if (error && !invitation) {
     return (
-      <div className="min-vh-100 d-flex align-items-center justify-content-center"
-        style={{ background: 'var(--mp-bg-subtle)', padding: 24 }}>
-        <div style={{ width: '100%', maxWidth: 460 }}>
-          <div className="medical-card text-center mp-scale-in" style={{ padding: 32 }}>
+      <div
+        className="min-vh-100 d-flex align-items-center justify-content-center"
+        style={{
+          background: "var(--mp-bg-subtle)",
+          padding: 24,
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <div
+            className="medical-card text-center mp-scale-in"
+            style={{ padding: 32 }}
+          >
             <div
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
                 width: 56,
                 height: 56,
                 borderRadius: 14,
-                background: 'var(--mp-danger-bg)',
-                color: 'var(--mp-danger)',
-                border: '1px solid var(--mp-danger-bd)',
+                background: "var(--mp-danger-bg)",
+                color: "var(--mp-danger)",
+                border: "1px solid var(--mp-danger-bd)",
                 marginBottom: 20,
               }}
             >
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
               </svg>
             </div>
 
@@ -350,9 +445,17 @@ export default function CompleteRegistration() {
 
   /* ============ MAIN FORM ============ */
   return (
-    <div className="min-vh-100 d-flex flex-column" style={{ background: 'var(--mp-bg-subtle)' }}>
+    <div
+      className="min-vh-100 d-flex flex-column"
+      style={{ background: "var(--mp-bg-subtle)" }}
+    >
       {/* Header */}
-      <header style={{ borderBottom: '1px solid var(--mp-border)', background: 'var(--mp-bg)' }}>
+      <header
+        style={{
+          borderBottom: "1px solid var(--mp-border)",
+          background: "var(--mp-bg)",
+        }}
+      >
         <div className="mp-container d-flex align-items-center justify-content-between py-3">
           <button
             onClick={() => navigate("/")}
@@ -362,12 +465,13 @@ export default function CompleteRegistration() {
             <IconArrowLeft />
             Back
           </button>
+
           <span
             style={{
               fontSize: 13,
-              color: 'var(--mp-text-muted)',
+              color: "var(--mp-text-muted)",
               fontWeight: 500,
-              letterSpacing: '-0.005em',
+              letterSpacing: "-0.005em",
             }}
           >
             Account setup
@@ -387,39 +491,49 @@ export default function CompleteRegistration() {
                     width: 48,
                     height: 48,
                     borderRadius: 12,
-                    background: 'var(--mp-primary)',
-                    color: '#fff',
+                    background: "var(--mp-primary)",
+                    color: "#fff",
                     fontWeight: 700,
                     fontSize: 20,
-                    letterSpacing: '-0.02em',
-                    boxShadow: '0 1px 2px rgba(10,15,26,0.15)',
+                    letterSpacing: "-0.02em",
+                    boxShadow: "0 1px 2px rgba(10,15,26,0.15)",
                   }}
                 >
                   M
                 </div>
+
                 <h1 className="mp-h2 mb-2">
-                  Complete {role === 'doctor' ? 'doctor' : 'patient'} registration
+                  Complete {role === "doctor" ? "doctor" : "patient"} registration
                 </h1>
+
                 <p className="mp-body" style={{ marginBottom: 0 }}>
                   Set your credentials to activate your MedPal account.
                 </p>
               </div>
 
-              <div className="medical-card mp-scale-in" style={{ padding: 32 }}>
+              <div
+                className="medical-card mp-scale-in"
+                style={{ padding: 32 }}
+              >
                 {/* Invitation info */}
                 <div className="medical-alert medical-alert-info mb-4">
                   <span className="medical-alert__icon">
                     <IconAlert />
                   </span>
+
                   <div style={{ fontSize: 13.5 }}>
                     <div className="mb-1">
                       <strong>Email:</strong> {invitation?.email}
                     </div>
-                    {role === 'doctor' && invitation?.metadata?.specialization && (
-                      <div className="mb-1">
-                        <strong>Specialization:</strong> {invitation.metadata.specialization}
-                      </div>
-                    )}
+
+                    {role === "doctor" &&
+                      invitation?.metadata?.specialization && (
+                        <div className="mb-1">
+                          <strong>Specialization:</strong>{" "}
+                          {invitation.metadata.specialization}
+                        </div>
+                      )}
+
                     <div style={{ opacity: 0.85 }}>
                       After registration, you'll be redirected to sign in.
                     </div>
@@ -436,7 +550,10 @@ export default function CompleteRegistration() {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                  <p className="mp-overline" style={{ marginBottom: 14 }}>
+                  <p
+                    className="mp-overline"
+                    style={{ marginBottom: 14 }}
+                  >
                     Personal information
                   </p>
 
@@ -445,6 +562,7 @@ export default function CompleteRegistration() {
                       <label className="medical-label">
                         First name <span className="required">*</span>
                       </label>
+
                       <input
                         name="first_name"
                         type="text"
@@ -455,10 +573,12 @@ export default function CompleteRegistration() {
                         placeholder="Enter first name"
                       />
                     </div>
+
                     <div className="col-sm-6">
                       <label className="medical-label">
                         Last name <span className="required">*</span>
                       </label>
+
                       <input
                         name="last_name"
                         type="text"
@@ -471,16 +591,22 @@ export default function CompleteRegistration() {
                     </div>
                   </div>
 
-                  {role === 'doctor' && (
+                  {role === "doctor" && (
                     <div className="mb-3">
-                      <label className="medical-label">Doctor code</label>
+                      <label className="medical-label">
+                        Doctor code
+                      </label>
+
                       <input
                         type="text"
                         placeholder="DR-XXXXX"
                         className="medical-input"
                         value={doctorCode}
-                        onChange={(e) => setDoctorCode(e.target.value.toUpperCase())}
+                        onChange={(e) =>
+                          setDoctorCode(e.target.value.toUpperCase())
+                        }
                       />
+
                       <span className="medical-hint">
                         If left empty, one will be auto-generated
                       </span>
@@ -488,7 +614,10 @@ export default function CompleteRegistration() {
                   )}
 
                   <div className="mb-3">
-                    <label className="medical-label">Phone number</label>
+                    <label className="medical-label">
+                      Phone number
+                    </label>
+
                     <input
                       name="phone"
                       type="tel"
@@ -501,7 +630,10 @@ export default function CompleteRegistration() {
 
                   <hr className="mp-divider" />
 
-                  <p className="mp-overline" style={{ marginBottom: 14 }}>
+                  <p
+                    className="mp-overline"
+                    style={{ marginBottom: 14 }}
+                  >
                     Security
                   </p>
 
@@ -510,6 +642,7 @@ export default function CompleteRegistration() {
                       <label className="medical-label">
                         Password <span className="required">*</span>
                       </label>
+
                       <input
                         type="password"
                         name="password"
@@ -521,10 +654,12 @@ export default function CompleteRegistration() {
                         placeholder="Minimum 6 characters"
                       />
                     </div>
+
                     <div className="col-sm-6">
                       <label className="medical-label">
                         Confirm password <span className="required">*</span>
                       </label>
+
                       <input
                         type="password"
                         name="confirmPassword"
@@ -559,7 +694,10 @@ export default function CompleteRegistration() {
 
               <p
                 className="text-center mt-4 mp-caption"
-                style={{ fontSize: 12.5, color: 'var(--mp-text-faint)' }}
+                style={{
+                  fontSize: 12.5,
+                  color: "var(--mp-text-faint)",
+                }}
               >
                 Your information is encrypted and securely stored.
               </p>
@@ -570,7 +708,9 @@ export default function CompleteRegistration() {
 
       <style>{`
         @keyframes mp-spin {
-          to { transform: rotate(360deg); }
+          to {
+            transform: rotate(360deg);
+          }
         }
       `}</style>
     </div>
