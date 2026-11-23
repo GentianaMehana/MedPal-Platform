@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import "../../styles/medical-theme.css";
@@ -9,6 +10,7 @@ const IconUserPlus = (p) => (
     <circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>
   </svg>
 );
+
 const IconCopy = (p) => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
@@ -16,36 +18,42 @@ const IconCopy = (p) => (
     <path d="M5 15V5a2 2 0 0 1 2-2h10"/>
   </svg>
 );
+
 const IconAlert = (p) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
     <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
   </svg>
 );
+
 const IconCheck = (p) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
   </svg>
 );
+
 const IconX = (p) => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
     <path d="M18 6L6 18M6 6l12 12"/>
   </svg>
 );
+
 const IconPlus = (p) => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
     <path d="M12 5v14M5 12h14"/>
   </svg>
 );
+
 const IconSend = (p) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...p}>
     <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
   </svg>
 );
+
 const IconSpinner = ({ size = 16, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     style={{ animation: 'mp-spin 0.9s linear infinite' }}>
@@ -117,7 +125,10 @@ export default function ClinicAddDoctor() {
   };
 
   const handleNumberChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value ? parseFloat(e.target.value) : "" });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value ? parseFloat(e.target.value) : ""
+    });
   };
 
   const addEducation = () => {
@@ -200,23 +211,32 @@ export default function ClinicAddDoctor() {
 
       if (dbError) throw dbError;
 
-      // Create production registration link
-const registrationLink = `https://medpalplatform.netlify.app/complete-registration/doctor?token=${token}`;
+      // LINKU I SAKTË I REGJISTRIMIT - NETLIFY
+      const registrationLink =
+        `https://medpalplatform.netlify.app/complete-registration/doctor?token=${token}`;
 
-setShowLink(registrationLink);
-      const { error: emailError } = await supabase.functions.invoke('send-invitation-smtp', {
-        body: {
-          to_email: formData.email,
-          to_name: formData.name,
-          inviter_name: clinicData.name,
-          token: token,
-          role: 'doctor'
+      // GABIMI I MËPARSHËM ISHTE registerLink.
+      // TANI PËRDORET registrationLink.
+      setShowLink(registrationLink);
+
+      const { error: emailError } = await supabase.functions.invoke(
+        'send-invitation-smtp',
+        {
+          body: {
+            to_email: formData.email,
+            to_name: formData.name,
+            inviter_name: clinicData.name,
+            token: token,
+            role: 'doctor'
+          }
         }
-      });
+      );
 
       if (emailError) {
         console.error('Email error:', emailError);
-        setMessage(`Invitation saved but email delivery failed. Share this link manually.`);
+        setMessage(
+          `Invitation saved but email delivery failed. Share this link manually.`
+        );
       } else {
         setMessage(`Invitation sent to ${formData.email}.`);
 
@@ -257,6 +277,7 @@ setShowLink(registrationLink);
 
   return (
     <div className="container-fluid px-4 py-4" style={{ maxWidth: 960 }}>
+
       {/* Page header */}
       <div className="mb-4">
         <p className="mp-overline mb-1">Clinic setup</p>
@@ -276,14 +297,19 @@ setShowLink(registrationLink);
       {showLink && messageType === "warning" && (
         <div className="medical-card mb-4" style={{ padding: 20 }}>
           <p className="mp-overline mb-2">Manual invitation link</p>
+
           <div className="d-flex gap-2 flex-wrap">
             <input
               type="text"
               className="medical-input flex-grow-1"
               value={showLink}
               readOnly
-              style={{ fontFamily: 'var(--mp-font-mono)', fontSize: 13 }}
+              style={{
+                fontFamily: 'var(--mp-font-mono)',
+                fontSize: 13
+              }}
             />
+
             <button
               type="button"
               className="medical-btn-outline"
@@ -293,7 +319,10 @@ setShowLink(registrationLink);
               Copy
             </button>
           </div>
-          <p className="mp-caption mt-2 mb-0">This link expires in 7 days.</p>
+
+          <p className="mp-caption mt-2 mb-0">
+            This link expires in 7 days.
+          </p>
         </div>
       )}
 
@@ -307,6 +336,7 @@ setShowLink(registrationLink);
       )}
 
       <form onSubmit={handleSubmit}>
+
         {/* Basic info */}
         <div className="medical-card mb-4" style={{ padding: 26 }}>
           <p className="mp-overline mb-3">Basic information</p>
@@ -316,6 +346,7 @@ setShowLink(registrationLink);
               <label className="medical-label">
                 Full name <span className="required">*</span>
               </label>
+
               <input
                 name="name"
                 type="text"
@@ -327,10 +358,12 @@ setShowLink(registrationLink);
                 placeholder="Dr. Jane Doe"
               />
             </div>
+
             <div className="col-md-6">
               <label className="medical-label">
                 Email address <span className="required">*</span>
               </label>
+
               <input
                 name="email"
                 type="email"
@@ -349,6 +382,7 @@ setShowLink(registrationLink);
               <label className="medical-label">
                 Department <span className="required">*</span>
               </label>
+
               <select
                 name="departmentId"
                 className="medical-input"
@@ -359,12 +393,16 @@ setShowLink(registrationLink);
               >
                 <option value="">Select department</option>
                 {departments.map(d => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
                 ))}
               </select>
             </div>
+
             <div className="col-md-6">
               <label className="medical-label">Phone</label>
+
               <input
                 name="phone"
                 type="tel"
@@ -385,6 +423,7 @@ setShowLink(registrationLink);
           <div className="row g-3 mb-3">
             <div className="col-md-6">
               <label className="medical-label">Specialization</label>
+
               <input
                 name="specialization"
                 type="text"
@@ -395,8 +434,10 @@ setShowLink(registrationLink);
                 placeholder="e.g. Cardiologist"
               />
             </div>
+
             <div className="col-md-6">
               <label className="medical-label">Consultation fee (€)</label>
+
               <input
                 name="consultationFee"
                 type="number"
@@ -413,6 +454,7 @@ setShowLink(registrationLink);
           <div className="row g-3 mb-3">
             <div className="col-md-6">
               <label className="medical-label">Years of experience</label>
+
               <input
                 name="yearsOfExperience"
                 type="number"
@@ -423,8 +465,10 @@ setShowLink(registrationLink);
                 disabled={loading}
               />
             </div>
+
             <div className="col-md-6">
               <label className="medical-label">License number</label>
+
               <input
                 name="licenseNumber"
                 type="text"
@@ -439,6 +483,7 @@ setShowLink(registrationLink);
           {/* Education */}
           <div className="mb-3">
             <label className="medical-label">Education</label>
+
             <div className="d-flex gap-2 mb-2">
               <input
                 type="text"
@@ -448,6 +493,7 @@ setShowLink(registrationLink);
                 placeholder="e.g. MD, University of Medicine"
                 disabled={loading}
               />
+
               <button
                 type="button"
                 className="medical-btn-outline"
@@ -458,6 +504,7 @@ setShowLink(registrationLink);
                 Add
               </button>
             </div>
+
             {formData.education.length > 0 && (
               <div className="d-flex flex-wrap gap-2 mt-2">
                 {formData.education.map((edu, index) => (
@@ -467,6 +514,7 @@ setShowLink(registrationLink);
                     style={{ paddingRight: 6 }}
                   >
                     {edu}
+
                     <button
                       type="button"
                       onClick={() => removeEducation(index)}
@@ -491,6 +539,7 @@ setShowLink(registrationLink);
           {/* Languages */}
           <div>
             <label className="medical-label">Languages spoken</label>
+
             <div className="d-flex gap-2 mb-2">
               <input
                 type="text"
@@ -500,6 +549,7 @@ setShowLink(registrationLink);
                 placeholder="e.g. English, Albanian"
                 disabled={loading}
               />
+
               <button
                 type="button"
                 className="medical-btn-outline"
@@ -510,6 +560,7 @@ setShowLink(registrationLink);
                 Add
               </button>
             </div>
+
             {formData.languages.length > 0 && (
               <div className="d-flex flex-wrap gap-2 mt-2">
                 {formData.languages.map((lang, index) => (
@@ -519,6 +570,7 @@ setShowLink(registrationLink);
                     style={{ paddingRight: 6 }}
                   >
                     {lang}
+
                     <button
                       type="button"
                       onClick={() => removeLanguage(index)}
