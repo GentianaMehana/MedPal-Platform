@@ -200,9 +200,10 @@ export default function ClinicAddDoctor() {
 
       if (dbError) throw dbError;
 
-      const registrationLink = `https://medpalplatform.netlify.app/complete-registration/doctor?token=${token}`;
-      setShowLink(registerLink);
+      // Create production registration link
+const registrationLink = `https://medpalplatform.netlify.app/complete-registration/doctor?token=${token}`;
 
+setShowLink(registrationLink);
       const { error: emailError } = await supabase.functions.invoke('send-invitation-smtp', {
         body: {
           to_email: formData.email,
